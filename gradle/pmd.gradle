@@ -1,0 +1,15 @@
+
+apply plugin: 'pmd'
+
+pmd {
+    ignoreFailures = true
+    toolVersion = '5.3.7'
+    consoleOutput = true
+}
+
+tasks.withType(Pmd) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}

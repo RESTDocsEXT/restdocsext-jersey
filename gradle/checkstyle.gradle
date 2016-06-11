@@ -1,0 +1,21 @@
+
+apply plugin: 'checkstyle'
+
+ext.configDir = project.file('config')
+ext.checkstyleConfigDir = "$configDir/checkstyle"
+
+checkstyle {
+    toolVersion = '6.19'
+    configFile = new File(checkstyleConfigDir, 'checkstyle.xml')
+    ignoreFailures = true
+    showViolations = true
+    configProperties = [ 'checkstyle.config.dir' : project.file('config/checkstyle') ]
+}
+
+tasks.withType(Checkstyle) {
+    reports {
+        xml.enabled true
+        html.enabled true
+        html.stylesheet resources.text.fromFile("$configDir/checkstyle/checkstyle-noframes.xsl")
+    }
+}
