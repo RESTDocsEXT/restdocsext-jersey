@@ -103,12 +103,16 @@ public final class RestdocsWebTarget implements WebTarget {
     }
 
     @Override
-    public RestdocsWebTarget resolveTemplates(Map<String, Object> templateValues) {
+    public RestdocsWebTarget resolveTemplates(Map<String, Object> templateValues)
+        throws NullPointerException {
+
         return resolveTemplates(templateValues, true);
     }
 
     @Override
-    public RestdocsWebTarget resolveTemplates(Map<String, Object> templateValues, boolean encodeSlashInPath) {
+    public RestdocsWebTarget resolveTemplates(Map<String, Object> templateValues, boolean encodeSlashInPath)
+            throws NullPointerException {
+
         if (templateValues.isEmpty()) {
             return this;
         } else {
@@ -117,7 +121,9 @@ public final class RestdocsWebTarget implements WebTarget {
     }
 
     @Override
-    public RestdocsWebTarget resolveTemplatesFromEncoded(Map<String, Object> templateValues) {
+    public RestdocsWebTarget resolveTemplatesFromEncoded(Map<String, Object> templateValues)
+            throws NullPointerException {
+
         if (templateValues.isEmpty()) {
             return this;
         } else {
@@ -167,7 +173,7 @@ public final class RestdocsWebTarget implements WebTarget {
     @Override
     public RestdocsWebTarget property(String name, Object value) {
         if (PROPERTY_KEY_SET.contains(name)) {
-            throw new IllegalArgumentException("Setting properties " + PROPERTY_KEY_SET + " not allowed.");
+            throw new IllegalArgumentException("Setting property " + name + " is not allowed.");
         }
         this.delegate.property(name, value);
         return this;
@@ -260,9 +266,9 @@ public final class RestdocsWebTarget implements WebTarget {
     private void checkForRestdocsFilterClass(Class<?> componentClass) {
         if (JerseyRestDocumentationFilter.class.equals(componentClass)) {
             throw new IllegalArgumentException(
-                    "JerseyRestDocumentationClass should not be reigsted as a class."
-                    + " It should only be registed by calling the static "
-                    + "JerseyRestDocumentation.document method.");
+                    "JerseyRestDocumentationFilter should not be reigsted as a class."
+                    + " It should be registed as an instance, which is obtained by calling the"
+                    + " static JerseyRestDocumentation.document method.");
         }
     }
 }
