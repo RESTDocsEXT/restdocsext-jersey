@@ -32,7 +32,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
 import org.glassfish.jersey.test.inmemory.InMemoryTestContainerFactory;
 import org.junit.Rule;
-import org.junit.Test;
+//import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -77,7 +77,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-    
+
     public JerseyRestDocumentationIntegrationTest() {
         super(new InMemoryTestContainerFactory());
     }

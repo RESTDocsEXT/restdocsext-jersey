@@ -44,19 +44,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @author Paul Samsotha
  */
 public class ResponseInterceptorTest extends JerseyTest {
-    
+
     private static final String BASE_URI = "http://localhost:8080/";
-    
+
     @Override
     public ResourceConfig configure() {
         return new ResourceConfig(TestResource.class);
     }
-    
+
     @Override
     public URI getBaseUri() {
         return URI.create(BASE_URI);
     }
-    
+
     @Test
     public void interceptor_should_store_response_body_in_configuration() {
         final ResponseBodyHolder holder = new ResponseBodyHolder();
@@ -66,12 +66,12 @@ public class ResponseInterceptorTest extends JerseyTest {
                 .register(ResponseInterceptor.class)
                 .request()
                 .get().close();
-        
+
         final byte[] responseContent = holder.getResponseContent();
         assertThat(responseContent, is(notNullValue()));
         assertThat(new String(responseContent), is("Default"));
     }
-    
+
     @Test
     public void response_body_property_should_be_null_when_no_body() {
         final ResponseBodyHolder holder = new ResponseBodyHolder();
@@ -81,7 +81,7 @@ public class ResponseInterceptorTest extends JerseyTest {
                 .register(ResponseInterceptor.class)
                 .request()
                 .get().close();
-        
+
         final byte[] responseContent = holder.getResponseContent();
         assertThat(responseContent, is(nullValue()));
     }

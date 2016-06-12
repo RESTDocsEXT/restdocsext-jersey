@@ -53,8 +53,8 @@ import jersey.repackaged.com.google.common.collect.Lists;
 import static io.github.restdocsext.jersey.DocumentationProperties.REQUEST_BODY_KEY;
 
 /**
- * Spring RestDocs {@code RequestConverter} implementation that converts Jersey
- * {@code ClientRequest} to the required Spring RestDocs {@code OperationRequest}.
+ * Spring RestDocs {@code RequestConverter} implementation that converts Jersey {@code ClientRequest} to the required
+ * Spring RestDocs {@code OperationRequest}.
  *
  * @author Paul Samsotha
  */
@@ -79,13 +79,12 @@ class JerseyRequestConverter implements RequestConverter<ClientRequest> {
      * @param request the client request.
      * @return the list of operation request parts.
      */
-    // default access modifier for testing
-    static List<OperationRequestPart> extractParts(ClientRequest request) {
-        List<OperationRequestPart> requestParts = new ArrayList<>();
+    private static List<OperationRequestPart> extractParts(ClientRequest request) {
+        final List<OperationRequestPart> requestParts = new ArrayList<>();
         if (("PUT".equalsIgnoreCase(request.getMethod())
                 || "POST".equalsIgnoreCase(request.getMethod()))
                 && request.getMediaType().isCompatible(MediaType.MULTIPART_FORM_DATA_TYPE)) {
-            FormDataMultiPart multiPart
+            final FormDataMultiPart multiPart
                     = extractEntity(request, FormDataMultiPart.class, request.getEntityClass());
             for (List<FormDataBodyPart> parts : multiPart.getFields().values()) {
                 for (FormDataBodyPart part : parts) {
@@ -105,8 +104,8 @@ class JerseyRequestConverter implements RequestConverter<ClientRequest> {
      */
     // can't test this on it's own as the part is not a body part entity
     private static OperationRequestPart createOperationRequestPart(FormDataBodyPart part) {
-        HttpHeaders partHeaders = extractHeaders(part.getHeaders());
-        List<String> contentTypeHeader = partHeaders.get(HttpHeaders.CONTENT_TYPE);
+        final HttpHeaders partHeaders = extractHeaders(part.getHeaders());
+        final List<String> contentTypeHeader = partHeaders.get(HttpHeaders.CONTENT_TYPE);
         if (part.getMediaType() != null && contentTypeHeader == null) {
             partHeaders.setContentType(org.springframework.http.MediaType.parseMediaType(
                     part.getMediaType().toString()));
@@ -119,25 +118,22 @@ class JerseyRequestConverter implements RequestConverter<ClientRequest> {
     }
 
     /**
-     * Extract form and query parameters from {@code ClientRequest} and convert to {@code Parameters}.
+     * Extract form and query parameters from {@code ClientRequest} and convert
+     * to {@code Parameters}.
      *
      * @param request the Jersey client request.
      * @return the Spring REST Docs parameters.
      */
     private static Parameters extractParameters(ClientRequest request) {
-        Parameters parameters;
-        if ("PUT".equalsIgnoreCase(request.getMethod()) || "POST".equalsIgnoreCase(request.getMethod())) {
-            parameters = new Parameters();
-            if (request.getMediaType().isCompatible(MediaType.APPLICATION_FORM_URLENCODED_TYPE)) {
-                Form form = extractEntity(request, Form.class, request.getEntityClass());
-                MultivaluedMap<String, String> formMap = form.asMap();
-                for (String paramKey : formMap.keySet()) {
-                    parameters.put(paramKey, formMap.get(paramKey));
-                }
+        final Parameters parameters = new QueryStringParser().parse(request.getUri());
+        if (("PUT".equalsIgnoreCase(request.getMethod())
+                || "POST".equalsIgnoreCase(request.getMethod()))
+                && request.getMediaType().isCompatible(MediaType.APPLICATION_FORM_URLENCODED_TYPE)) {
+            final Form form = extractEntity(request, Form.class, request.getEntityClass());
+            final MultivaluedMap<String, String> formMap = form.asMap();
+            for (String paramKey : formMap.keySet()) {
+                parameters.put(paramKey, formMap.get(paramKey));
             }
-        } else {
-            QueryStringParser parser = new QueryStringParser();
-            parameters = parser.parse(request.getUri());
         }
 
         return parameters;
@@ -150,7 +146,7 @@ class JerseyRequestConverter implements RequestConverter<ClientRequest> {
      * @return the converted Spring HTTP headers.
      */
     private static HttpHeaders extractHeaders(MultivaluedMap<String, ?> mapHeaders) {
-        HttpHeaders headers = new HttpHeaders();
+        final HttpHeaders headers = new HttpHeaders();
         for (String header : mapHeaders.keySet()) {
             for (Object val : mapHeaders.get(header)) {
                 headers.add(header, val.toString());
@@ -160,8 +156,8 @@ class JerseyRequestConverter implements RequestConverter<ClientRequest> {
     }
 
     /**
-     * Extract an entity from the {@code ClientRequestContext} and return it in the form of
-     * the type specified as the {@code returnType} argument.
+     * Extract an entity from the {@code ClientRequestContext} and return it in the form of the
+     * type specified as the {@code returnType} argument.
      *
      * @param <T> The type of entity to return.
      * @param request the {@code ClientRequest} for the request.
@@ -169,7 +165,7 @@ class JerseyRequestConverter implements RequestConverter<ClientRequest> {
      * @param entityType the entity type.
      * @return the entity in the form if the type specifies as the {@code entityType} argument.
      */
-    static <T, U> T extractEntity(ClientRequest request, Class<T> returnType, Class<U> entityType) {
+    private static <T, U> T extractEntity(ClientRequest request, Class<T> returnType, Class<U> entityType) {
         try {
             final MessageBodyWorkers workers = request.getWorkers();
             final Object entity = request.getEntity();
@@ -178,8 +174,9 @@ class JerseyRequestConverter implements RequestConverter<ClientRequest> {
 
             MediaType mediaType = request.getMediaType();
 
-            ByteArrayOutputStream entityOut = new ByteArrayOutputStream();
-            MessageBodyWriter<U> writer = findWriter(workers, entityType, type, new Annotation[0], mediaType);
+            final ByteArrayOutputStream entityOut = new ByteArrayOutputStream();
+            final MessageBodyWriter<U> writer = findWriter(workers, entityType, type, new Annotation[0],
+                    mediaType);
             if (writer == null) {
                 throw new IllegalStateException("No MessageBodyWriter found for mediatype "
                         + mediaType + " and java type " + entityType);
@@ -188,8 +185,8 @@ class JerseyRequestConverter implements RequestConverter<ClientRequest> {
             writer.writeTo(entityType.cast(entity), entityType, type, new Annotation[0],
                     mediaType, headers, entityOut);
 
-            ByteArrayInputStream entityIn = new ByteArrayInputStream(entityOut.toByteArray());
-            MessageBodyReader<T> reader = workers.getMessageBodyReader(
+            final ByteArrayInputStream entityIn = new ByteArrayInputStream(entityOut.toByteArray());
+            final MessageBodyReader<T> reader = workers.getMessageBodyReader(
                     returnType, null, new Annotation[0], mediaType);
             if (reader == null) {
                 throw new IllegalStateException("No MessageBodyReader found for mediatype "
@@ -199,11 +196,11 @@ class JerseyRequestConverter implements RequestConverter<ClientRequest> {
             if (("POST".equalsIgnoreCase(request.getMethod())
                     || "PUT".equalsIgnoreCase(request.getMethod()))
                     && request.getMediaType().isCompatible(MediaType.MULTIPART_FORM_DATA_TYPE)) {
-                    // If we don't do this, the boundary is not included
+                // If we don't do this, the boundary is not included
                 // So we add the boundary ourselves.
-                String contentType = (String) headers.getFirst(HttpHeaders.CONTENT_TYPE);
-                String[] split = contentType.split(";");
-                Map<String, String> parameters = new HashMap<>();
+                final String contentType = (String) headers.getFirst(HttpHeaders.CONTENT_TYPE);
+                final String[] split = contentType.split(";");
+                final Map<String, String> parameters = new HashMap<>();
                 for (int i = 1; i < split.length; i++) {
                     String[] paramPair = split[i].split("=");
                     if (paramPair.length == 2) {
@@ -230,7 +227,7 @@ class JerseyRequestConverter implements RequestConverter<ClientRequest> {
     }
 
     private static MultivaluedMap<String, String> objectMapToStringMap(MultivaluedMap<String, Object> source) {
-        MultivaluedMap<String, String> converted = new MultivaluedHashMap<>();
+        final MultivaluedMap<String, String> converted = new MultivaluedHashMap<>();
         for (String key : source.keySet()) {
             converted.put(key, objectListToStringList(source.get(key)));
         }
@@ -238,7 +235,7 @@ class JerseyRequestConverter implements RequestConverter<ClientRequest> {
     }
 
     private static List<String> objectListToStringList(List<Object> source) {
-        List<String> converted = Lists.newArrayList();
+        final List<String> converted = Lists.newArrayList();
         for (Object obj : source) {
             converted.add(obj.toString());
         }

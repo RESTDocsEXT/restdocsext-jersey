@@ -62,7 +62,7 @@ public class TestResource {
     public Response postModel(TestModel model) {
         return Response.status(201).entity(model).build();
     }
-    
+
     @POST
     @Path("post-no-response-body")
     public void postNoResponse() {

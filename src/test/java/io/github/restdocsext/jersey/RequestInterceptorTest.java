@@ -82,7 +82,7 @@ public class RequestInterceptorTest extends JerseyTest {
         assertThat(requestContent, is(notNullValue()));
         assertThat(new String(requestContent), is("TestData"));
     }
-    
+
     /**
      * {@code WriterInterceptor} is not called when there is no body, so this should always
      * pass, as long as the Jersey implementation doesn't change.
@@ -96,7 +96,7 @@ public class RequestInterceptorTest extends JerseyTest {
                 .register(RequestInterceptor.class)
                 .request()
                 .get().close();
-        
+
         final byte[] requestContent = holder.getRequestContent();
         assertThat(requestContent, is(nullValue()));
     }
