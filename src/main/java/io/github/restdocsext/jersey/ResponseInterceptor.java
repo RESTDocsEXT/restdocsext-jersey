@@ -53,19 +53,18 @@ public class ResponseInterceptor implements ClientResponseFilter {
         }
     }
 
-    private InputStream getEntity(StringBuilder b, InputStream stream, final Charset charset) throws IOException {
-        if (!stream.markSupported()) {
-            stream = new BufferedInputStream(stream);
+    private InputStream getEntity(StringBuilder b, InputStream in, final Charset charset) throws IOException {
+        if (!in.markSupported()) {
+            in = new BufferedInputStream(in);
         }
-        stream.mark(maxEntitySize + 1);
+        in.mark(maxEntitySize + 1);
         final byte[] entity = new byte[maxEntitySize + 1];
-        final int entitySize = stream.read(entity);
+        final int entitySize = in.read(entity);
         b.append(new String(entity, 0, Math.min(entitySize, maxEntitySize), charset));
         if (entitySize > maxEntitySize) {
             b.append("...more...");
         }
-        b.append('\n');
-        stream.reset();
-        return stream;
+        in.reset();
+        return in;
     }
 }

@@ -30,12 +30,11 @@ import javax.ws.rs.ext.WriterInterceptorContext;
 import static io.github.restdocsext.jersey.DocumentationProperties.REQUEST_BODY_KEY;
 
 /**
- * A JAX-RS/Jersey interceptor that grabs the request entity and stores it for later
- * use by the documentation engine.
+ * A JAX-RS/Jersey interceptor that grabs the request entity and stores it for later use by the documentation engine.
  *
  * @author Paul Samsotha
  */
-@Priority(Integer.MIN_VALUE)
+@Priority(Integer.MAX_VALUE)
 @ConstrainedTo(RuntimeType.CLIENT)
 public class RequestInterceptor implements WriterInterceptor {
 
