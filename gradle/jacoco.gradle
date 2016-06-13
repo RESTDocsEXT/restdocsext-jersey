@@ -18,3 +18,5 @@ jacocoTestReport {
         html.destination "${buildDir}/reports/jacoco/coverage"
     }
 }
+
+check.dependsOn jacocoTestReport
