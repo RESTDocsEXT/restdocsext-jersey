@@ -30,9 +30,6 @@ import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.message.MessageBodyWorkers;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 import org.springframework.http.HttpMethod;
 import org.springframework.restdocs.operation.OperationRequest;
@@ -52,8 +49,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Paul Samsotha
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(JerseyRequestConverter.class)
 public class JerseyRequestConverterTest extends AbstractLocatorAwareTest {
 
     @Test

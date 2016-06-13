@@ -46,6 +46,15 @@ public class RestdocsClientBuilder extends ClientBuilder {
 
     private final JerseyClientBuilder delegate = new JerseyClientBuilder();
 
+    /**
+     * Factory method to to create new {@link RestdocsClient}.
+     *
+     * @return the new Restdocs client
+     */
+    public static RestdocsClient newClient() {
+        return new RestdocsClientBuilder().build();
+    }
+
     @Override
     public ClientBuilder withConfig(Configuration config) {
         this.delegate.withConfig(config);
