@@ -53,8 +53,8 @@ import jersey.repackaged.com.google.common.collect.Lists;
 import static io.github.restdocsext.jersey.DocumentationProperties.REQUEST_BODY_KEY;
 
 /**
- * Spring RestDocs {@code RequestConverter} implementation that converts Jersey {@code ClientRequest} to the required
- * Spring RestDocs {@code OperationRequest}.
+ * Spring RestDocs {@code RequestConverter} implementation that converts Jersey
+ * {@code ClientRequest} to the required Spring RestDocs {@code OperationRequest}.
  *
  * @author Paul Samsotha
  */

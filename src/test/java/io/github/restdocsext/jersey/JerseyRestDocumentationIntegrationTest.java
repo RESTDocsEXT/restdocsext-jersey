@@ -27,9 +27,13 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.glassfish.jersey.filter.LoggingFilter;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.glassfish.jersey.media.multipart.MultiPart;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
-import org.glassfish.jersey.test.TestProperties;
 import org.glassfish.jersey.test.inmemory.InMemoryTestContainerFactory;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,6 +46,7 @@ import io.github.restdocsext.jersey.test.TestResource;
 
 import static io.github.restdocsext.jersey.JerseyRestDocumentation.document;
 import static io.github.restdocsext.jersey.JerseyRestDocumentation.documentationConfiguration;
+import static io.github.restdocsext.jersey.operation.preprocess.JerseyPreprocessors.binaryParts;
 import static io.github.restdocsext.jersey.test.SnippetMatchers.codeBlock;
 import static io.github.restdocsext.jersey.test.SnippetMatchers.httpRequest;
 import static io.github.restdocsext.jersey.test.SnippetMatchers.snippet;
@@ -57,8 +62,10 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.restdocs.templates.TemplateFormats.asciidoctor;
 
 /**
@@ -89,9 +96,9 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
 
     @Override
     public ResourceConfig configure() {
-        enable(TestProperties.LOG_TRAFFIC);
-        enable(TestProperties.DUMP_ENTITY);
-        return new ResourceConfig(TestResource.class);
+        return new ResourceConfig(TestResource.class)
+                .register(MultiPartFeature.class)
+                .register(LoggingFilter.class);
     }
 
     @Test
@@ -405,6 +412,32 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
         assertThat(bean.getFname(), is(equalTo("michael")));
         assertThat(bean.getLname(), is(equalTo("jordan")));
         response.close();
+    }
+
+    @Test
+    public void multipart_request() {
+        final MultiPart multiPart = new FormDataMultiPart()
+                .field("field1", "field1Data")
+                .field("field2", "filed2Data")
+                .bodyPart(new FileDataBodyPart("file", new File("src/test/resources/images/image.png")));
+        final Response response = target()
+                .register(MultiPartFeature.class)
+                .register(documentationConfiguration(this.documentation))
+                .register(document("multipart-request",
+                        preprocessRequest(
+                                binaryParts().field("file", "<<image-data>>"),
+                                removeHeaders("User-Agent", "Content-Type")),
+                        requestParts(
+                                partWithName("field1").description("field1 description"),
+                                partWithName("field2").description("field2 description"),
+                                partWithName("file").description("image file"))))
+                .path("test/post-multipart")
+                .request()
+                .post(Entity.entity(multiPart, MediaType.MULTIPART_FORM_DATA));
+
+        assertThat(response.getStatus(), is(Response.Status.NO_CONTENT.getStatusCode()));
+        assertExpectedSnippetFilesExist(new File("build/generated-snippets/multipart-request"),
+                "http-request.adoc", "http-response.adoc", "curl-request.adoc", "request-parts.adoc");
     }
 
     @Test

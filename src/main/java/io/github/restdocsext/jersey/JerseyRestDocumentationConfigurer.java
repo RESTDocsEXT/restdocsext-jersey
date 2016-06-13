@@ -40,7 +40,7 @@ import static io.github.restdocsext.jersey.DocumentationProperties.CONTEXT_CONFI
  * @author Paul Samsotha
  */
 @Priority(ProviderPriorities.CONFIGURER)
-class JerseyRestDocumentationConfigurer
+public class JerseyRestDocumentationConfigurer
         extends
         RestDocumentationConfigurer<JerseySnippetConfigurer, JerseyRestDocumentationConfigurer>
         implements ClientResponseFilter {

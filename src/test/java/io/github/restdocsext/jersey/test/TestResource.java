@@ -25,6 +25,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+
 /**
  * Simple resource class for testing.
  *
@@ -81,5 +83,12 @@ public class TestResource {
     public String getPathParam(@PathParam("param1") String param1,
             @PathParam("param2") String param2) {
         return param1 + ":" + param2;
+    }
+
+    @POST
+    @Path("post-multipart")
+    @Consumes("multipart/form-data")
+    public void postMultipart(FormDataMultiPart multiPart) {
+
     }
 }

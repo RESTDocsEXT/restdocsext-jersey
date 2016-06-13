@@ -24,6 +24,7 @@ import javax.annotation.Priority;
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.RuntimeType;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.WriterInterceptor;
 import javax.ws.rs.ext.WriterInterceptorContext;
 
@@ -41,6 +42,14 @@ public class RequestInterceptor implements WriterInterceptor {
     @Override
     public void aroundWriteTo(WriterInterceptorContext context)
             throws IOException, WebApplicationException {
+
+        // Don't set the content if it is multipart, otherwise REST Docs will
+        // add the content in the request, along with adding the parts
+        // through the OperationRequestParts.
+        if (context.getMediaType().isCompatible(MediaType.MULTIPART_FORM_DATA_TYPE)) {
+            context.proceed();
+            return;
+        }
 
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         final OutputStream original = context.getOutputStream();
