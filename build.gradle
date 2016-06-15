@@ -10,13 +10,14 @@ buildscript {
 }
 
 apply plugin: 'java'
+apply plugin: 'maven'
 apply plugin: 'com.github.kt3k.coveralls'
 apply from: "gradle/jacoco.gradle"
 apply from: "gradle/checkstyle.gradle"
 apply from: "gradle/pmd.gradle"
 
-group = 'io.github.restdocs.ext'
-version = '0.0.1-SNAPSHOT'
+group = 'io.github.restdocsext'
+version = '0.1.0-SNAPSHOT'
 
 sourceCompatibility = '1.7'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'

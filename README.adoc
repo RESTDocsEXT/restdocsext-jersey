@@ -1,0 +1,239 @@
+
+= RESTDocsEXT Jersey
+:toc: preamble
+:toclevels: 3
+ifndef::env-github[:icons: font]
+ifdef::env-github[]
+:note-caption: :memo:
+:!toc-title:
+endif::[]
+
+image:https://travis-ci.org/RESTDocsEXT/restdocsext-jersey.svg?branch=master[Build Status, link=https://travis-ci.org/RESTDocsEXT/restdocsext-jersey]
+image:https://coveralls.io/repos/github/RESTDocsEXT/restdocsext-jersey/badge.svg?branch=master[Coverage Status, link=https://coveralls.io/github/RESTDocsEXT/restdocsext-jersey?branch=master]
+image:http://img.shields.io/badge/license-ASF2-blue.svg[Apache License 2, link=http://www.apache.org/licenses/LICENSE-2.0.txt]
+
+== Introduction
+
+This project is an extension of the link:https://projects.spring.io/spring-restdocs/[Spring REST Docs] framework, that allows for the creating of API documentation snippets, using the link:https://jersey.java.net/[Jersey 2] Client API.
+
+== Getting Started
+
+=== Dependencies
+
+This project is directly dependent on three Jersey artifacts, `jersey-client`,
+`jersey-media-json-jackson`, and `jersey-media-multipart`. The version that this project 
+uses is Jersey 2.10.4. To avoid any possible version incompatibilities in your
+Jersey project, you should explicitly declare these three dependencies with the the
+version of Jersey you are using in your project. This project has been tested using
+Jersey 2.10.4 up until the latest (as of this writing) 2.23. It may or may not work
+with an earlier version than 2.10.4.
+
+NOTE: It is important that you make the RESTDocsEXT Jersey dependency only a test dependency, as you probably don't want this client being used in the application, but instead use the normal Jersey client.
+
+==== Maven
+[source,xml]
+----
+<properties>
+    <your.jersey.version>2.22</your.jersey.version>
+    <restdocsext.jersey.version>0.1.0-SNAPSHOT</restdocsext.jersey.version>
+</properties>
+<dependencies>
+    <dependency>
+        <groupId>io.github.restdocsext</groupId>
+        <artifactId>restdocsext-jersey</artifactId>
+        <version>${restdocsext.jersey.version}</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.glassfish.jersey.core</groupId>
+        <artifactId>jersey-client</artifactId>
+        <version>${your.jersey.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.glassfish.jersey.media</groupId>
+        <artifactId>jersey-media-json-jackson</artifactId>
+        <version>${your.jersey.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.glassfish.jersey.media</groupId>
+        <artifactId>jersey-media-multipart</artifactId>
+        <version>${your.jersey.version}</version>
+    </dependency>
+</dependencies>
+----
+
+==== Gradle
+[source,groovy]
+----
+ext {
+    restdocsextJerseyVersion = '0.1.0-SNAPSHOT'
+    yourJerseyVersion = '2.22'
+}
+
+dependencies {
+    testCompile "io.github.restdocsext:restdocsext-jersey:$restdocsextJerseyVersion"
+    compile "org.glassfish.jersey.core:jersey-client:$yourJerseyVersion"
+    compile "org.glassfish.jersey.media:jersey-media-multipart:$yourJerseyVersion"
+    compile "org.glassfish.jersey.media:jersey-media-json-jackson:$yourJerseyVersion"
+}
+----
+
+=== How to Use
+
+To use RESTDocsEXT Jersey, all you need is the above dependency, then you can create the client just like you would when using the standard JAX-RS Client API.
+
+[source,java]
+----
+Client client = ClientBuilder.newClient();
+----
+
+Here the `Client` instance will be an instance of `RestdocsClient`, instead of the usual `JerseyClient` you would get when working with Jersey. Calling `target` on the `Client` will return a `RestdocsWebTarget`. This is where you will register the components that handle documentation.
+
+[source,java]
+----
+WebTarget target = client.target(uri);
+        .register(document("get-simple"))
+        .register(documentationConfiguration(this.documentation))
+----
+
+If you are using link:https://jersey.java.net/documentation/latest/test-framework.html[Jersey Test Framework], you generally don't need to create the `Client` yourself, as you can just call the `target` method of the `JerseyTest` class, and that will also return a `RestdocsWebTarget`.
+
+Below is an example using Jersey Test Framework. You will need the following test dependency to run the example.
+
+[discrete]
+==== Maven
+[source,xml]
+----
+<dependency>
+    <groupId>org.glassfish.jersey.test-framework.providers<groupId>
+    <artifactId>jersey-test-framework-provider-inmemory</artifactId>
+    <version>${your.jersey.version}</version>
+    <scope>test</scope>
+</dependency>
+----
+
+[discrete]
+==== Gradle
+[source,groovy]
+----
+// should be all on one line
+testCompile "org.glassfish.jersey.test-framework.providers
+             :jersey-test-framework-provider-inmemory
+             :$jerseyVersion"
+----
+
+[discrete]
+==== Example
+
+[source,java]
+----
+// Other imports excluded for brevity
+import static io.github.restdocsext.jersey.JerseyRestDocumentation.document;
+import static io.github.restdocsext.jersey.JerseyRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.removeHeaders;
+
+public class SimpleDocumentation extends JerseyTest {
+    
+    @Rule
+    public JUnitRestDocumentation documentation  // <1>
+            = new JUnitRestDocumentation("build/generated-snippets");
+    
+    @Path("test")
+    public static class TestResource {
+        @GET
+        public String getSimple() {
+            return "SimpleTesting";
+        }
+    }
+    
+    @Override
+    public ResourceConfig configure() {
+        return new ResourceConfig(TestResource.class);
+    }
+    
+    @Test
+    public void getSimple() {
+        final Response response = target("test")
+                .register(documentationConfiguration(this.documentation))  // <2>
+                .register(document("get-simple",  // <3>
+                        preprocessRequest(removeHeaders("User-Agent"))))  // <4>
+                .request()
+                .get();
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.readEntity(String.class), is("SimpleTesting"));
+    }
+}
+----
+
+1. The is the JUnit rule that required for Spring REST Docs to store context information about the current documentation operation. The value passed to the `JUnitRestDocumentation` constructor is the directory where the generated snippets should be stored. In a Gradle project, you generally want this in the `build` directory, whereas in a Maven project, you will probably want it in the
+`target` directory.
+
+2. This is the configuration of the documentation.
+
+3. The component returned from the static `document` method is the component that handles the actual documentation. There are many thing that can be configure within the context of this method call.
+
+4. Here we are setting a preprocessor telling Spring REST Docs to exclude the `User-Agent` header from all the documentation snippets. Jersey Test Framework seems to add this header, so we want it removed.
+
+After you run the test, you should see following four files in the `build/generated-snippets`
+directory. These are the default snippets generated for every documentation
+operation.
+
+*curl-request.adoc*
+```
+[source,bash]
+----
+$ curl 'http://localhost:9998/test' -i
+----
+```
+
+*http-request.adoc*
+```
+[source,http,options="nowrap"]
+----
+GET /test HTTP/1.1
+Host: localhost
+
+----
+```
+
+*http-response.adoc*
+```
+[source,http,options="nowrap"]
+----
+HTTP/1.1 200 OK
+Content-Length: 13
+Date: Wed, 15 Jun 2016 03:48:58 GMT
+Content-Type: text/html
+
+SimpleTesting
+----
+```
+
+*httpie-request.adoc*
+```
+[source,bash]
+----
+$ http GET 'http://localhost:9998/test'
+----
+```
+
+== Build from Source
+
+To build the project, you should have at least Java 7 installed. Then from the root of the project run the `gradlew` script
+
+[source,bash]
+----
+./gradlew build
+----
+
+If you want to install into your local Maven repo so you can use the artifact with a Maven project, run
+
+[source,bash]
+----
+./gradlew install
+----
+
+== License
+
+RESTDocsEXT Jersey is open source software released under the link:http://www.apache.org/licenses/LICENSE-2.0.html[Apache 2.0 license].
