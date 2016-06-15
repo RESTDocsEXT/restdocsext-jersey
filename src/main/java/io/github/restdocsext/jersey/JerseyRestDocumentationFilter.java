@@ -84,15 +84,25 @@ public class JerseyRestDocumentationFilter implements ClientResponseFilter {
     }
 
     /**
-     * Adds the given {@code snippets} such that they are documented when this result handler
-     * is called.
+     * Create a new {@link JerseyRestDocumentationFilter} that will produce documentation
+     * with the provided snippets.
      *
      * @param snippets the snippets to add
-     * @return this {@code JerseyRestDocumentationFilter}
+     * @return a new Jersey documentation filter.
      */
-    public JerseyRestDocumentationFilter snippet(Snippet... snippets) {
-        this.delegate.addSnippets(snippets);
-        return this;
+    public JerseyRestDocumentationFilter document(Snippet... snippets) {
+        return new JerseyRestDocumentationFilter(this.delegate.withSnippets(snippets)) {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public void filter(ClientRequestContext request, ClientResponseContext response)
+                    throws IOException {
+                final Map<String, Object> configuration = new HashMap<>(
+                        getContextProperty(request, CONTEXT_CONFIGURATION_KEY, Map.class));
+                configuration.remove(RestDocumentationGenerator.ATTRIBUTE_NAME_DEFAULT_SNIPPETS);
+                super.filter(request, response);
+            }
+        };
     }
 
     /**

@@ -54,6 +54,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.removeHeaders;
@@ -80,7 +82,8 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
     private static final String BASE_URI = "http://localhost:" + PORT + "/";
 
     @Rule
-    public JUnitRestDocumentation documentation = new JUnitRestDocumentation("build/generated-snippets");
+    public JUnitRestDocumentation restDocumentation
+            = new JUnitRestDocumentation("build/generated-snippets");
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -104,7 +107,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
     @Test
     public void default_snippets_generated() {
         final Response response = target()
-                .register(documentationConfiguration(this.documentation))
+                .register(documentationConfiguration(this.restDocumentation))
                 .register(document("default"))
                 .path("test/get-default")
                 .request().get();
@@ -117,7 +120,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
     public void curl_snippet_with_content() {
         final String contentType = "text/plain; charset=UTF-8";
         final Response response = target()
-                .register(documentationConfiguration(this.documentation))
+                .register(documentationConfiguration(this.restDocumentation))
                 .register(document("curl-snippet-with-content",
                                 preprocessRequest(removeHeaders("User-Agent"))))
                 .path("test/post-simple")
@@ -137,7 +140,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
     @Test
     public void curl_get_with_query_string() {
         final Response response = target()
-                .register(documentationConfiguration(this.documentation))
+                .register(documentationConfiguration(this.restDocumentation))
                 .register(document("curl-get-with-query-string",
                                 preprocessRequest(removeHeaders("User-Agent"))))
                 .path("test/get-default")
@@ -156,7 +159,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
     @Test
     public void query_parameters_snippet() {
         final Response response = target()
-                .register(documentationConfiguration(this.documentation))
+                .register(documentationConfiguration(this.restDocumentation))
                 .register(document("query-parameters",
                                 requestParameters(
                                         parameterWithName("a").description("'a' description"),
@@ -181,7 +184,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
         this.thrown.expect(ProcessingException.class);
 
         final Response response = target()
-                .register(documentationConfiguration(this.documentation))
+                .register(documentationConfiguration(this.restDocumentation))
                 .register(document("missing-query-parameters",
                                 requestParameters(
                                         parameterWithName("a").description("'a' description"))))
@@ -197,7 +200,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
     @Test
     public void path_parameters_snippet() {
         final Response response = target()
-                .register(documentationConfiguration(this.documentation))
+                .register(documentationConfiguration(this.restDocumentation))
                 .register(document("path-parameters",
                                 pathParameters(
                                         parameterWithName("param1").description("param1 description"),
@@ -218,7 +221,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
         this.thrown.expect(ProcessingException.class);
 
         final Response response = target()
-                .register(documentationConfiguration(this.documentation))
+                .register(documentationConfiguration(this.restDocumentation))
                 .register(document("mssing-path-parameter-descriptor",
                                 pathParameters(
                                         parameterWithName("param1").description("param1 description"))))
@@ -236,7 +239,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
         form.param("a", "alpha");
         form.param("b", "bravo");
         final Response response = target()
-                .register(documentationConfiguration(this.documentation))
+                .register(documentationConfiguration(this.restDocumentation))
                 .register(document("form-parameters",
                                 requestParameters(
                                         parameterWithName("a").description("a description"),
@@ -249,7 +252,8 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
         response.close();
 
         assertExpectedSnippetFilesExist(new File("build/generated-snippets/form-parameters"),
-                "curl-request.adoc", "http-request.adoc", "http-request.adoc", "request-parameters.adoc");
+                "curl-request.adoc", "http-request.adoc", "http-request.adoc",
+                "request-parameters.adoc");
     }
 
     @Test
@@ -260,7 +264,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
         form.param("a", "alpha");
         form.param("b", "bravo");
         final Response response = target()
-                .register(documentationConfiguration(this.documentation))
+                .register(documentationConfiguration(this.restDocumentation))
                 .register(document("missing-form-parameters",
                                 requestParameters(
                                         parameterWithName("a").description("a description"))))
@@ -278,7 +282,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
         form.param("a", "alpha");
         form.param("b", "bravo");
         final Response response = target()
-                .register(documentationConfiguration(this.documentation))
+                .register(documentationConfiguration(this.restDocumentation))
                 .register(document("curl-with-form-parameters",
                                 preprocessRequest(removeHeaders("User-Agent"))))
                 .path("test/post-form")
@@ -303,7 +307,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
         form.param("a", "alpha");
         form.param("b", "bravo");
         final Response response = target()
-                .register(documentationConfiguration(this.documentation))
+                .register(documentationConfiguration(this.restDocumentation))
                 .register(document("curl-post-with-query-and-form",
                                 preprocessRequest(removeHeaders("User-Agent"))))
                 .path("test/post-form")
@@ -317,18 +321,18 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
 
         assertThat(new File("build/generated-snippets/curl-post-with-query-and-form/curl-request.adoc"),
                 is(snippet(asciidoctor()).withContents(
-                                codeBlock(asciidoctor(), "bash").content(
-                                        "$ curl "
-                                        + "'http://localhost:8080/test/post-form?c=charlie&d=delta' -i -X POST "
-                                        + "-H 'Content-Type: application/x-www-form-urlencoded' "
-                                        + "-d 'a=alpha&b=bravo'"))));
+                        codeBlock(asciidoctor(), "bash").content(
+                                "$ curl "
+                                + "'http://localhost:8080/test/post-form?c=charlie&d=delta' -i -X POST "
+                                + "-H 'Content-Type: application/x-www-form-urlencoded' "
+                                + "-d 'a=alpha&b=bravo'"))));
     }
 
     @Test
     public void json_request_fields() {
         final TestModel bean = new TestModel(0, "michael", "jordan");
         final Response response = target()
-                .register(documentationConfiguration(this.documentation))
+                .register(documentationConfiguration(this.restDocumentation))
                 .register(document("json-request-fields",
                                 requestFields(
                                         fieldWithPath("id").description("id field"),
@@ -352,7 +356,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
 
         TestModel bean = new TestModel(1, "michael", "jordan");
         Response response = target()
-                .register(documentationConfiguration(this.documentation))
+                .register(documentationConfiguration(this.restDocumentation))
                 .register(document("missing-json-request-fields",
                                 requestFields(
                                         fieldWithPath("id").description("id field"))))
@@ -368,7 +372,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
     public void json_response_fields() throws Exception {
         TestModel bean = new TestModel(1, "michael", "jordan");
         final Response response = target()
-                .register(documentationConfiguration(this.documentation))
+                .register(documentationConfiguration(this.restDocumentation))
                 .register(document("json-response-fields",
                                 responseFields(
                                         fieldWithPath("id").description("id field"),
@@ -397,7 +401,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
 
         TestModel bean = new TestModel(1, "michael", "jordan");
         final Response response = target()
-                .register(documentationConfiguration(this.documentation))
+                .register(documentationConfiguration(this.restDocumentation))
                 .register(document("json-response-fields",
                                 responseFields(
                                         fieldWithPath("id").description("id field"))))
@@ -422,15 +426,15 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
                 .bodyPart(new FileDataBodyPart("file", new File("src/test/resources/images/image.png")));
         final Response response = target()
                 .register(MultiPartFeature.class)
-                .register(documentationConfiguration(this.documentation))
+                .register(documentationConfiguration(this.restDocumentation))
                 .register(document("multipart-request",
-                        preprocessRequest(
-                                binaryParts().field("file", "<<image-data>>"),
-                                removeHeaders("User-Agent", "Content-Type")),
-                        requestParts(
-                                partWithName("field1").description("field1 description"),
-                                partWithName("field2").description("field2 description"),
-                                partWithName("file").description("image file"))))
+                                preprocessRequest(
+                                        binaryParts().field("file", "<<image-data>>"),
+                                        removeHeaders("User-Agent", "Content-Type")),
+                                requestParts(
+                                        partWithName("field1").description("field1 description"),
+                                        partWithName("field2").description("field2 description"),
+                                        partWithName("file").description("image file"))))
                 .path("test/post-multipart")
                 .request()
                 .post(Entity.entity(multiPart, MediaType.MULTIPART_FORM_DATA));
@@ -443,7 +447,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
     @Test
     public void parameterizedOutputDirectory() {
         target()
-                .register(documentationConfiguration(this.documentation))
+                .register(documentationConfiguration(this.restDocumentation))
                 .register(document("{method-name}"))
                 .path("test/get-default")
                 .request()
@@ -457,7 +461,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
     @Test
     public void multiStep() {
         WebTarget target = target("test/get-default")
-                .register(documentationConfiguration(this.documentation))
+                .register(documentationConfiguration(this.restDocumentation))
                 .register(document("{method-name}-{step}"));
 
         target.request().get().close();
@@ -477,12 +481,33 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
     }
 
     @Test
+    public void additionalSnippets() {
+        final JerseyRestDocumentationFilter documentation = document("{method-name}-{step}");
+        final Response response = target()
+                .register(documentationConfiguration(this.restDocumentation))
+                .register(documentation)
+                .path("test/get-default")
+                .register(documentation.document(
+                                requestHeaders(
+                                        headerWithName("foo").description("bar"))))
+                .request()
+                .header("foo", "bar")
+                .get();
+
+        assertThat(response.getStatus(), is(200));
+        assertExpectedSnippetFilesExist(
+                new File("build/generated-snippets/additional-snippets-1/"),
+                "http-request.adoc", "http-response.adoc", "curl-request.adoc",
+                "request-headers.adoc");
+    }
+
+    @Test
     public void preprocessed_request() {
         final String json = "{\"a\":\"alpha\"}";
         final Pattern pattern = Pattern.compile("(\"alpha\")");
 
         final Response response = target()
-                .register(documentationConfiguration(this.documentation))
+                .register(documentationConfiguration(this.restDocumentation))
                 .register(document("original-request"))
                 .register(document("preprocessed-request",
                                 preprocessRequest(prettyPrint(),
