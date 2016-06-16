@@ -1,0 +1,61 @@
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
+    }
+}
+
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+ext {
+    releaseVersion = version
+    artifactName = rootProject.name
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    pkg {
+        repo = 'RESTDocsEXT'
+        name = 'restdocsext-jersey'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/RESTDocsEXT/restdocsext-jersey.git'
+        
+        version {
+            name = releaseVersion
+            desc = 'An extension of Spring REST Docs that allows for snippet creating using Jersey Client.'
+            released = new Date()
+            vcsTag = releaseVersion
+        }
+    }
+    publications = ['MyPublication']
+}
+
+task javadocJar (type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+task sourcesJar (type : Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+            groupId group
+            artifactId artifactName
+            version releaseVersion
+            
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
+}
