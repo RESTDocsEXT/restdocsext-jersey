@@ -32,14 +32,16 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.glassfish.jersey.client.ClientRequest;
 import org.glassfish.jersey.client.ClientResponse;
 import org.glassfish.jersey.message.MessageBodyWorkers;
-import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.http.HttpHeaders;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Utility class to create mocks Jersey components. The methods return builders from which the
@@ -102,8 +104,8 @@ public final class Mocks {
 
         private ClientRequestBuilder() {
             this.clientRequest = mock(ClientRequest.class);
-            Mockito.when(this.clientRequest.getHeaders()).thenReturn(this.headers);
-            Mockito.when(this.clientRequest.getHeaderString(anyString())).thenAnswer(
+            when(this.clientRequest.getHeaders()).thenReturn(this.headers);
+            when(this.clientRequest.getHeaderString(anyString())).thenAnswer(
                     new Answer<String>() {
                         @Override
                         public String answer(InvocationOnMock invocation) throws Throwable {
@@ -113,11 +115,11 @@ public final class Mocks {
                     });
             // Configuration
             Configuration configuration = mock(Configuration.class);
-            Mockito.when(configuration.getProperties()).thenReturn(this.configProps);
-            Mockito.when(this.clientRequest.getConfiguration()).thenReturn(configuration);
-            Mockito.when(configuration.getProperties())
+            when(configuration.getProperties()).thenReturn(this.configProps);
+            when(this.clientRequest.getConfiguration()).thenReturn(configuration);
+            when(configuration.getProperties())
                     .thenReturn(Collections.<String, Object>unmodifiableMap(this.configProps));
-            Mockito.when(this.clientRequest.getConfiguration().getProperty(anyString())).thenAnswer(
+            when(this.clientRequest.getConfiguration().getProperty(anyString())).thenAnswer(
                     new Answer<Object>() {
                         @Override
                         public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -125,7 +127,15 @@ public final class Mocks {
                             return ClientRequestBuilder.this.configProps.get(prop);
                         }
                     });
-            Mockito.when(this.clientRequest.resolveProperty(anyString(), any())).thenAnswer(
+            when(this.clientRequest.getProperty(anyString())).thenAnswer(
+                    new Answer<Object>() {
+                        @Override
+                        public Object answer(InvocationOnMock invocation) throws Throwable {
+                            String prop = invocation.getArgumentAt(0, String.class);
+                            return ClientRequestBuilder.this.configProps.get(prop);
+                        }
+                    });
+            when(this.clientRequest.resolveProperty(anyString(), any())).thenAnswer(
                     new Answer<Object>() {
                         @Override
                         public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -134,16 +144,25 @@ public final class Mocks {
                             return value == null ? invocation.getArguments()[1] : value;
                         }
                     });
+            doAnswer(new Answer<Void>() {
+                @Override
+                public Void answer(InvocationOnMock invocation) throws Throwable {
+                    ClientRequestBuilder.this.configProps.put(
+                            (String) invocation.getArguments()[0],
+                            invocation.getArguments()[1]);
+                    return null;
+                }
+            }).when(this.clientRequest).setProperty(anyString(), any());
         }
 
         public ClientRequestBuilder contentType(MediaType mediaType) {
-            Mockito.when(this.clientRequest.getMediaType()).thenReturn(mediaType);
+            when(this.clientRequest.getMediaType()).thenReturn(mediaType);
             this.headers.add(HttpHeaders.CONTENT_TYPE, mediaType.toString());
             return this;
         }
 
         public ClientRequestBuilder entity(Object entity) {
-            Mockito.when(this.clientRequest.getEntity()).thenReturn(entity);
+            when(this.clientRequest.getEntity()).thenReturn(entity);
             return this;
         }
 
@@ -163,32 +182,32 @@ public final class Mocks {
         }
 
         public ClientRequestBuilder entityClass(Class<?> entityClass) {
-            Mockito.doReturn(entityClass).when(this.clientRequest).getEntityClass();
+            doReturn(entityClass).when(this.clientRequest).getEntityClass();
             return this;
         }
 
         public ClientRequestBuilder entityType(Type entityType) {
-            Mockito.when(this.clientRequest.getEntityType()).thenReturn(entityType);
+            when(this.clientRequest.getEntityType()).thenReturn(entityType);
             return this;
         }
 
         public ClientRequestBuilder method(String method) {
-            Mockito.when(this.clientRequest.getMethod()).thenReturn(method);
+            when(this.clientRequest.getMethod()).thenReturn(method);
             return this;
         }
 
         public ClientRequestBuilder uri(URI uri) {
-            Mockito.when(this.clientRequest.getUri()).thenReturn(uri);
+            when(this.clientRequest.getUri()).thenReturn(uri);
             return this;
         }
 
         public ClientRequestBuilder entityStream(OutputStream entityStream) {
-            Mockito.when(this.clientRequest.getEntityStream()).thenReturn(entityStream);
+            when(this.clientRequest.getEntityStream()).thenReturn(entityStream);
             return this;
         }
 
         public ClientRequestBuilder messageBodyWorkers(MessageBodyWorkers workers) {
-            Mockito.when(this.clientRequest.getWorkers()).thenReturn(workers);
+            when(this.clientRequest.getWorkers()).thenReturn(workers);
             return this;
         }
 
@@ -208,8 +227,8 @@ public final class Mocks {
 
         private ClientResponseBuilder() {
             this.clientResponse = mock(ClientResponse.class);
-            Mockito.when(this.clientResponse.getHeaders()).thenReturn(this.headers);
-            Mockito.when(this.clientResponse.getHeaderString(anyString())).thenAnswer(new Answer<String>() {
+            when(this.clientResponse.getHeaders()).thenReturn(this.headers);
+            when(this.clientResponse.getHeaderString(anyString())).thenAnswer(new Answer<String>() {
                 @Override
                 public String answer(InvocationOnMock invocation) throws Throwable {
                     String header = invocation.getArgumentAt(0, String.class);
@@ -219,24 +238,24 @@ public final class Mocks {
         }
 
         public ClientResponseBuilder bufferEntity() {
-            Mockito.when(this.clientResponse.bufferEntity()).thenReturn(true);
+            when(this.clientResponse.bufferEntity()).thenReturn(true);
             return this;
         }
 
         public ClientResponseBuilder contentType(MediaType mediaType) {
-            Mockito.when(this.clientResponse.getMediaType()).thenReturn(mediaType);
+            when(this.clientResponse.getMediaType()).thenReturn(mediaType);
             this.headers.add(HttpHeaders.CONTENT_TYPE, mediaType.toString());
             return this;
         }
 
         public ClientResponseBuilder entity(Object entity) {
-            Mockito.when(this.clientResponse.getEntity()).thenReturn(entity);
+            when(this.clientResponse.getEntity()).thenReturn(entity);
             return this;
         }
 
         public ClientResponseBuilder entityStream(InputStream entityStream) {
-            Mockito.when(this.clientResponse.getEntityStream()).thenReturn(entityStream);
-            Mockito.when(this.clientResponse.readEntity(InputStream.class)).thenReturn(entityStream);
+            when(this.clientResponse.getEntityStream()).thenReturn(entityStream);
+            when(this.clientResponse.readEntity(InputStream.class)).thenReturn(entityStream);
             return this;
         }
 
@@ -251,22 +270,22 @@ public final class Mocks {
         }
 
         public <T> ClientResponseBuilder readEntity(Class<T> clazz, T entity) {
-            Mockito.when(this.clientResponse.readEntity(clazz)).thenReturn(entity);
+            when(this.clientResponse.readEntity(clazz)).thenReturn(entity);
             return this;
         }
 
         public ClientResponseBuilder status(int status) {
-            Mockito.when(this.clientResponse.getStatus()).thenReturn(status);
+            when(this.clientResponse.getStatus()).thenReturn(status);
             return this;
         }
 
         public ClientResponseBuilder messageBodyWorkers(MessageBodyWorkers workers) {
-            Mockito.when(this.clientResponse.getWorkers()).thenReturn(workers);
+            when(this.clientResponse.getWorkers()).thenReturn(workers);
             return this;
         }
 
         public ClientResponseBuilder requestContext(ClientRequest requestContext) {
-            Mockito.when(this.clientResponse.getRequestContext()).thenReturn(requestContext);
+            when(this.clientResponse.getRequestContext()).thenReturn(requestContext);
             return this;
         }
 

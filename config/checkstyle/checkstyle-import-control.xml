@@ -4,9 +4,10 @@
 
 	<allow pkg=".*" regex="true"/>
 
-	<!-- Use BDD Mockito -->
+	<!-- Use BDD Mockito
 	<disallow class="org.mockito.Mockito.when"/>
 	<disallow class="org.mockito.Mockito.doThrow"/>
 	<disallow class="org.mockito.Mockito.doAnswer"/>
+    -->
 
 </import-control>

@@ -25,6 +25,10 @@ sourceCompatibility = '1.7'
 ext {
     jerseyVersion = '2.10.4'
     springRestdocsVersion = '1.1.0.RELEASE'
+    javadocLinks = [
+		'http://docs.oracle.com/javase/8/docs/api/',
+		"http://docs.spring.io/spring-restdocs/docs/$springRestdocsVersion/api/"
+    ] as String[]
 }
 
 repositories {
@@ -43,7 +47,7 @@ dependencies {
     
     compile 'commons-io:commons-io:2.4'
     compile("org.springframework.restdocs:spring-restdocs-core:$springRestdocsVersion") {
-        exclude module: 'jackson-databind'
+        exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'
     }
     
     testCompile 'junit:junit:4.12'
@@ -64,3 +68,10 @@ test {
     }
 }
 
+javadoc {
+    options.author = true
+    options.memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PROTECTED
+    options.links = javadocLinks
+    options.header = "RESTDocsEXT Jersey $version"
+    options.docTitle = "${options.header} API"
+}

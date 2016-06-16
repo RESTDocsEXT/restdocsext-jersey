@@ -17,8 +17,9 @@
 package io.github.restdocsext.jersey.operation.preprocess;
 
 /**
- * factory methods for getting Spring REST Docs {@link OperationPreprocessor}s that are
- * to be used with Jersey client documentation.
+ * factory methods for getting Spring REST Docs
+ * {@link org.springframework.restdocs.operation.preprocess.OperationPreprocessor}s
+ * that are to be used with Jersey client documentation.
  *
  * @author Paul Samsotha
  */
