@@ -24,8 +24,8 @@ import org.springframework.restdocs.operation.OperationRequest;
 import org.springframework.restdocs.operation.OperationRequestFactory;
 import org.springframework.restdocs.operation.OperationRequestPart;
 import org.springframework.restdocs.operation.OperationRequestPartFactory;
-import org.springframework.restdocs.operation.OperationResponse;
 import org.springframework.restdocs.operation.preprocess.OperationPreprocessor;
+import org.springframework.restdocs.operation.preprocess.OperationPreprocessorAdapter;
 
 import jersey.repackaged.com.google.common.base.Preconditions;
 
@@ -34,9 +34,10 @@ import jersey.repackaged.com.google.common.base.Preconditions;
  *
  * @author Paul Samsotha
  */
-public final class BinaryPartPlaceholderOperationPreprocessor implements OperationPreprocessor {
+public final class BinaryPartPlaceholderOperationPreprocessor
+        extends OperationPreprocessorAdapter {
 
-    private static final String DEFAULT_CONTENT = "<binary-data>";
+    private static final String DEFAULT_CONTENT = "<<binary data>>";
 
     private final OperationRequestFactory requestFactory = new OperationRequestFactory();
 
@@ -45,9 +46,9 @@ public final class BinaryPartPlaceholderOperationPreprocessor implements Operati
     private final List<MultiPartField> fields = new ArrayList<>();
 
     /**
-     * Add a multipart field with the specified field name. Calling this method will use the
-     * default placeholder content {@code <binary content>}. If you want a different
-     * placeholder, call {@code field(String name, String placeholder} instead.
+     * Add a multipart field with the specified field name. Calling this method will use the default
+     * placeholder content {@code <binary content>}. If you want a different placeholder, call
+     * {@code field(String name, String placeholder} instead.
      *
      * @param name the name of the field.
      * @return the multipart field
@@ -80,36 +81,37 @@ public final class BinaryPartPlaceholderOperationPreprocessor implements Operati
         if (parts.isEmpty()) {
             return request;
         }
-        final Collection<OperationRequestPart> modifiedParts = modifyFields(parts);
-        return this.requestFactory.create(request.getUri(), request.getMethod(), request.getContent(),
-                request.getHeaders(), request.getParameters(), modifiedParts);
+        final Collection<OperationRequestPart> modifiedParts = modifyParts(parts);
+        return this.requestFactory.create(request.getUri(), request.getMethod(),
+                request.getContent(), request.getHeaders(), request.getParameters(),
+                modifiedParts);
     }
 
-    private Collection<OperationRequestPart> modifyFields(Collection<OperationRequestPart> parts) {
-        final List<OperationRequestPart> newParts = new ArrayList<>();
+    private Collection<OperationRequestPart> modifyParts(Collection<OperationRequestPart> parts) {
+        final List<OperationRequestPart> modifiedParts = new ArrayList<>();
         for (OperationRequestPart part : parts) {
             boolean foundField = false;
             for (MultiPartField field : this.fields) {
                 if (field.getName().equals(part.getName())) {
-                    final String content = field.getPlaceholder() == null
-                            ? DEFAULT_CONTENT : field.getPlaceholder();
-                    final OperationRequestPart newPart = this.partFactory.create(field.getName(),
-                            part.getSubmittedFileName(), content.getBytes(), part.getHeaders());
-                    newParts.add(newPart);
+                    final OperationRequestPart modifiedPart = modifyPart(part, field);
+                    modifiedParts.add(modifiedPart);
                     foundField = true;
                     break;
                 }
             }
             if (!foundField) {
-                newParts.add(part);
+                modifiedParts.add(part);
             }
         }
-        return newParts;
+        return modifiedParts;
     }
 
-    @Override
-    public OperationResponse preprocess(OperationResponse response) {
-        return response;
+    private OperationRequestPart modifyPart(OperationRequestPart part, MultiPartField field) {
+        final String content = field.getPlaceholder() == null
+                ? DEFAULT_CONTENT : field.getPlaceholder();
+        return BinaryPartPlaceholderOperationPreprocessor.this.partFactory
+                .create(field.getName(), part.getSubmittedFileName(), content.getBytes(),
+                        part.getHeaders());
     }
 
     /**

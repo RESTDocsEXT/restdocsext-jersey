@@ -68,7 +68,7 @@ public class BinaryPartPlaceholderOperationPreprocessorTest {
     }
 
     @Test
-    public void replace_binary_multipart_content_with__default_placeholder() {
+    public void replace_binary_multipart_content_with_default_placeholder() {
         OperationRequestPart part1 = this.partFactory.create("field1",
                 "file1.png", "BinaryContent".getBytes(), new HttpHeaders());
         OperationRequestPart part2 = this.partFactory.create("field2",
@@ -80,7 +80,7 @@ public class BinaryPartPlaceholderOperationPreprocessorTest {
         this.preprocessor.field("field1");
         final OperationRequest preprocessed = this.preprocessor.preprocess(request);
         final Collection<OperationRequestPart> parts = preprocessed.getParts();
-        assertThat(hasPart(parts, "field1", "<binary-data>"), is(true));
+        assertThat(hasPart(parts, "field1", "<<binary data>>"), is(true));
         assertThat(hasPart(parts, "field2", "TextContent"), is(true));
     }
 
