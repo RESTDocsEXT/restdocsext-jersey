@@ -1,5 +1,5 @@
 
-= RESTDocsEXT Jersey
+= RESTDocsEXT Jersey (Work in Progess - Unreleased)
 :toc: preamble
 :toclevels: 3
 ifndef::env-github[:icons: font]
