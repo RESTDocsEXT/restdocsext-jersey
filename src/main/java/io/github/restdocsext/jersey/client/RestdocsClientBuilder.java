@@ -51,7 +51,7 @@ public class RestdocsClientBuilder extends ClientBuilder {
      *
      * @return the new Restdocs client
      */
-    public static RestdocsClient newClient() {
+    public static RestdocsClient createClient() {
         return new RestdocsClientBuilder().build();
     }
 
