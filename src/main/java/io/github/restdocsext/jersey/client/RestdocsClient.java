@@ -17,6 +17,7 @@
 package io.github.restdocsext.jersey.client;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.net.ssl.HostnameVerifier;
@@ -30,7 +31,9 @@ import javax.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.client.JerseyClient;
 import org.glassfish.jersey.client.JerseyInvocation;
 import org.glassfish.jersey.client.JerseyWebTarget;
+import org.glassfish.jersey.internal.util.PropertiesHelper;
 
+import io.github.restdocsext.jersey.DocumentationProperties;
 import io.github.restdocsext.jersey.RequestInterceptor;
 import io.github.restdocsext.jersey.ResponseInterceptor;
 
@@ -97,6 +100,10 @@ public class RestdocsClient implements Client {
     }
 
     private void checkAndRegisterInterceptors(WebTarget target) {
+        if (PropertiesHelper.getValue(this.delegate.getConfiguration().getProperties(),
+                DocumentationProperties.DISABLE_INTERCEPTORS, false, new HashMap<String, String>())) {
+            return;
+        }
         if (!target.getConfiguration().isRegistered(RequestInterceptor.class)) {
             target.register(RequestInterceptor.class);
         }
@@ -128,7 +135,8 @@ public class RestdocsClient implements Client {
     @Override
     public RestdocsClient property(String name, Object value) {
         if (PROPERTY_KEY_SET.contains(name)) {
-            throw new IllegalArgumentException("Setting properties " + PROPERTY_KEY_SET + " not allowed.");
+            throw new IllegalArgumentException("Setting properties "
+                    + PROPERTY_KEY_SET + " not allowed.");
         }
         this.delegate.property(name, value);
         return this;

@@ -114,6 +114,11 @@ public class RestdocsClientTest {
         assertThat(target.getConfiguration().isRegistered(ResponseInterceptor.class), is(true));
     }
 
+    private void assertInterceptorsNotRegistered(WebTarget target) {
+        assertThat(target.getConfiguration().isRegistered(RequestInterceptor.class), is(false));
+        assertThat(target.getConfiguration().isRegistered(ResponseInterceptor.class), is(false));
+    }
+
     @Test
     public void set_property() {
         this.client.property("someProp", "someValue");
@@ -176,6 +181,18 @@ public class RestdocsClientTest {
     public void creation_of_invocation_through_client_not_supported() {
         thrown.expect(UnsupportedOperationException.class);
         this.client.invocation(Link.fromUri("http://localhost:8080/").build());
+    }
+
+    @Test
+    public void configure_no_interceptors() {
+        Client c = new RestdocsClientBuilder().build();
+        WebTarget target = c.target("http://locahost");
+        assertInterceptorsRegistered(target);
+
+        c = new RestdocsClientBuilder()
+                .property(DocumentationProperties.DISABLE_INTERCEPTORS, true).build();
+        target = c.target("http://localhost");
+        assertInterceptorsNotRegistered(target);
     }
 
     private void assertRegisteredComponent(Client client, Class<?> componentCls) {

@@ -72,6 +72,13 @@ public final class DocumentationProperties {
     public static final String CONTEXT_CONFIGURATION_KEY = "io.github.restdocsext.jersey.configuration";
 
     /**
+     * Property to disable automatically registered interceptors use for documentation.
+     * This property should only be used for clients don't want the interceptors added
+     * for non-documenting usage of the client.
+     */
+    public static final String DISABLE_INTERCEPTORS = "io.github.restdocsext.jersey.disableInterceptors";
+
+    /**
      * Set of all configuration property keys.
      */
     public static final Set<String> PROPERTY_KEY_SET = new HashSet<>(
