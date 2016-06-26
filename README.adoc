@@ -236,7 +236,7 @@ If you want to install into your local Maven repo so you can use the artifact wi
 
 [source,bash]
 ----
-./gradlew install
+./gradlew publishToMavenLocal
 ----
 
 **Again:** Please see link:https://github.com/RESTDocsEXT/restdocsext-jersey/wiki/The-Client[the Wiki] for much more detailed information.
