@@ -67,12 +67,23 @@ NOTE: It is important that you make the RESTDocsEXT Jersey dependency only a tes
 </dependencies>
 ----
 
+For Gradle users, this project's artifacts are hosted on Bintray, jcenter, and Maven Central. So you can use any of the three repositories shown below.
+
 ==== Gradle
 [source,groovy]
 ----
 ext {
     restdocsextJerseyVersion = '0.1.0'
     yourJerseyVersion = '2.23'
+}
+
+
+repositories {
+    maven {
+        url 'https://dl.bintray.com/psamsotha/RESTDocsEXT'
+    }
+    jcenter()
+    mavenCentral()
 }
 
 dependencies {
@@ -223,6 +234,9 @@ $ http GET 'http://localhost:9998/test'
 ----
 ```
 
+**Again:** Please see link:https://github.com/RESTDocsEXT/restdocsext-jersey/wiki/The-Client[the Wiki] for more detailed information.
+
+
 == Build from Source
 
 To build the project, you should have at least Java 7 installed. Then from the root of the project run the `gradlew` script
@@ -238,8 +252,6 @@ If you want to install into your local Maven repo so you can use the artifact wi
 ----
 ./gradlew publishToMavenLocal
 ----
-
-**Again:** Please see link:https://github.com/RESTDocsEXT/restdocsext-jersey/wiki/The-Client[the Wiki] for much more detailed information.
 
 == License
 
