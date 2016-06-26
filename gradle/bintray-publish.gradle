@@ -28,7 +28,7 @@ bintray {
             
             mavenCentralSync {
                 sync = true
-                user = project.property('ossrhUser')
+                user = project.hasProperty('ossrhUser') ? project.property('ossrhUser') : 'none'
                 password = project.hasProperty('ossrhPassword') ? project.property('ossrhPassword') : 'fail'
             } 
         }
