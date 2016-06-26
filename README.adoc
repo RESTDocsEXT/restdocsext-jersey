@@ -1,5 +1,5 @@
 
-= RESTDocsEXT Jersey (Work in Progess - Unreleased)
+= RESTDocsEXT Jersey
 :toc: preamble
 :toclevels: 3
 ifndef::env-github[:icons: font]
@@ -11,19 +11,24 @@ endif::[]
 image:https://travis-ci.org/RESTDocsEXT/restdocsext-jersey.svg?branch=master[Build Status, link=https://travis-ci.org/RESTDocsEXT/restdocsext-jersey]
 image:https://coveralls.io/repos/github/RESTDocsEXT/restdocsext-jersey/badge.svg?branch=master[Coverage Status, link=https://coveralls.io/github/RESTDocsEXT/restdocsext-jersey?branch=master]
 image:http://img.shields.io/badge/license-ASF2-blue.svg[Apache License 2, link=http://www.apache.org/licenses/LICENSE-2.0.txt]
+image:https://maven-badges.herokuapp.com/maven-central/io.github.restdocsext/restdocsext-jersey/badge.svg[Maven Central, link=https://maven-badges.herokuapp.com/maven-central/io.github.restdocsext/restdocsext-jersey]
+image:http://www.javadoc.io/badge/io.github.restdocsext/restdocsext-jersey.svg[Javadocs, link=http://www.javadoc.io/doc/io.github.restdocsext/restdocsext-jersey]
 
 == Introduction
 
-This project is an extension of the link:https://projects.spring.io/spring-restdocs/[Spring REST Docs] framework, that allows for the creating of API documentation snippets, using the link:https://jersey.java.net/[Jersey 2] Client API.
+This project is an extension of the link:https://projects.spring.io/spring-restdocs/[Spring REST Docs] framework, that allows for the creation of API documentation snippets, using the link:https://jersey.java.net/[Jersey 2] Client API.
 
 == Getting Started
+
+The following is a quick getting started guide. For more detailed information, please
+see link:https://github.com/RESTDocsEXT/restdocsext-jersey/wiki/The-Client[the Wiki].
 
 === Dependencies
 
 This project is directly dependent on three Jersey artifacts, `jersey-client`,
 `jersey-media-json-jackson`, and `jersey-media-multipart`. The version that this project 
 uses is Jersey 2.10.4. To avoid any possible version incompatibilities in your
-Jersey project, you should explicitly declare these three dependencies with the the
+Jersey project, you should explicitly declare these three dependencies with the
 version of Jersey you are using in your project. This project has been tested using
 Jersey 2.10.4 up until the latest (as of this writing) 2.23. It may or may not work
 with an earlier version than 2.10.4.
@@ -34,8 +39,8 @@ NOTE: It is important that you make the RESTDocsEXT Jersey dependency only a tes
 [source,xml]
 ----
 <properties>
-    <your.jersey.version>2.22</your.jersey.version>
-    <restdocsext.jersey.version>0.1.0-SNAPSHOT</restdocsext.jersey.version>
+    <your.jersey.version>2.23</your.jersey.version>
+    <restdocsext.jersey.version>0.1.0</restdocsext.jersey.version>
 </properties>
 <dependencies>
     <dependency>
@@ -66,8 +71,8 @@ NOTE: It is important that you make the RESTDocsEXT Jersey dependency only a tes
 [source,groovy]
 ----
 ext {
-    restdocsextJerseyVersion = '0.1.0-SNAPSHOT'
-    yourJerseyVersion = '2.22'
+    restdocsextJerseyVersion = '0.1.0'
+    yourJerseyVersion = '2.23'
 }
 
 dependencies {
@@ -233,6 +238,8 @@ If you want to install into your local Maven repo so you can use the artifact wi
 ----
 ./gradlew install
 ----
+
+**Again:** Please see link:https://github.com/RESTDocsEXT/restdocsext-jersey/wiki/The-Client[the Wiki] for much more detailed information.
 
 == License
 
