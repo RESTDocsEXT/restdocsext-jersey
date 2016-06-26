@@ -17,14 +17,25 @@ bintray {
         
         version {
             name = releaseVersion
-            desc = 'An extension of Spring REST Docs that allows for snippet creating using Jersey Client.'
+            desc = 'An extension of Spring REST Docs that allows for snippet creation using Jersey Client.'
             released = new Date()
             vcsTag = "v$releaseVersion"
+            
+            gpg {
+                sign = true
+                passphrase = project.hasProperty('gpgPassphrase') ? project.property('gpgPassphrase') : 'fail'
+            }
+            
+            mavenCentralSync {
+                sync = true
+                user = project.property('ossrhUser')
+                password = project.hasProperty('ossrhPassword') ? project.property('ossrhPassword') : 'fail'
+            } 
         }
         
-        dryRun = true
+        //dryRun = true
     }
-    publications = ['MyPublication']
+    publications = ['restdocsPub']
 }
 
 task javadocJar (type: Jar, dependsOn: javadoc) {
@@ -39,7 +50,7 @@ task sourcesJar (type : Jar) {
 
 publishing {
     publications {
-        MyPublication(MavenPublication) {
+        restdocsPub(MavenPublication) {
             from components.java
             groupId group
             artifactId artifactName
@@ -47,6 +58,54 @@ publishing {
             
             artifact sourcesJar
             artifact javadocJar
+            
+            repositories {
+                maven {
+                    url "file:/${project.buildDir}/artifacts"
+                }
+            }
+  
+            pom.withXml {
+                asNode().children().last() + {
+                    resolveStrategy = Closure.DELEGATE_FIRST
+                    name 'RESTDocsEXT Jersey'
+                    packaging 'jar'
+                    description 'An extension of Spring REST Docs that allows for snippet creating using Jersey Client.'
+                    url 'https://github.com/RESTDocsEXT/restdocsext-jersey.git'
+
+                    organization {
+                        name 'RESTDocsEXT'
+                        url 'https://github.com/RESTDocsEXT'
+                    }
+
+                    scm {
+                        url 'scm:git@github.com:RESTDocsEXT/restdocsext-jersey.git'
+                        connection 'scm:git@github.com:RESTDocsEXT/restdocsext-jersey.git'
+                        developerConnection 'scm:git@github.com:RESTDocsEXT/restdocsext-jersey.git'
+                    }
+
+                    licenses {
+                        license {
+                            name 'The Apache Software License, Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            distribution 'repo'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id 'psamsotha'
+                            name 'Paul Samsotha'
+                            email 'paulsamsotha.dev@gmail.com'
+                        }
+                    }
+
+                    issueManagement {
+                        system 'GitHub'
+                        url 'https://github.com/RESTDocsEXT/restdocsext-jersey/issues'
+                    }
+                }
+            }
         }
     }
 }
