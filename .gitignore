@@ -2,7 +2,7 @@
 .gradle
 .idea
 *.iml
-gradle/dependency-cache/
+dependency-cache
 
 # Eclipse files
 .classpath
@@ -17,6 +17,10 @@ target
 
 # Netbeans files
 .nb-gradle
+nb-configuration.xml
+
+# Sample builds
+docs
 
 # Miscellaneous
 TODO.md
