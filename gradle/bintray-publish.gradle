@@ -58,12 +58,6 @@ publishing {
             
             artifact sourcesJar
             artifact javadocJar
-            
-            repositories {
-                maven {
-                    url "file:/${project.buildDir}/artifacts"
-                }
-            }
   
             pom.withXml {
                 asNode().children().last() + {
