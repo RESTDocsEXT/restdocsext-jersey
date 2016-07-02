@@ -1,0 +1,102 @@
+= Sports Teams API
+:toc: left
+:toclevels: 3
+:source-highlighter: highlightjs
+:sectlinks:
+
+== Introduction
+
+The Sports Teams API is a generic API that has no use in the real world. It exposes an API for ficticious sports team data.
+
+== Resources
+
+=== Teams
+
+==== Get a Collection of Teams
+
+This endpoint allows for the retrieval of a collection of teams.
+
+===== cURL Request
+
+include::{snippets}/get-all-teams/curl-request.adoc[]
+
+The request can be limited to a number of teams by passing in a request parameter in the query string.
+
+===== Request Parameters
+
+include::{snippets}/get-all-teams/request-parameters.adoc[]
+
+==== Get a Single Team
+
+This endpoint allows for the retrieval of data for a single team.
+
+===== cURL Request
+
+include::{snippets}/get-team-by-id/curl-request.adoc[]
+
+===== Path Parameters
+
+include::{snippets}/get-team-by-id/path-parameters.adoc[]
+
+===== Response Fields
+
+include::{snippets}/get-team-by-id/response-fields.adoc[]
+
+==== Create a Team
+
+This endpoint allows for the creation of a new team.
+
+===== cURL Request
+
+include::{snippets}/create-a-team/curl-request.adoc[]
+
+===== Request Fields
+
+include::{snippets}/create-a-team/request-fields.adoc[]
+
+Note that when creating a new team, an id _MUST NOT_ be sent with the request. A null value _MAY_ be sent (but not necessary). In the event an id _is_ sent, a client error response status will be sent back.
+
+Upon sucessful creation, a `Location` header will be sent back, specifiying the newly created URI for the team.
+
+include::{snippets}/create-a-team/http-response.adoc[]
+
+==== Update a Team
+
+Generally, the way to update a team, is to first retrieve the team representation from the server, update it on the client, then send back the updated representation.
+
+===== Initial GET cURL Request
+
+include::{snippets}/update-team-initial-get/curl-request.adoc[]
+
+include::{snippets}/update-team-initial-get/http-response.adoc[]
+
+Once the client has does an updates with the representation, and wants to push the changes to the server, a PUT request should be made
+
+include::{snippets}/update-team/curl-request.adoc[]
+
+In both the GET and the PUT request, the team identifier should be present
+
+include::{snippets}/update-team/path-parameters.adoc[]
+
+In the PUT request, the request field should match this URL identifier. A request with a different identifiers will lead to an error response. And a request using a nonexistant identifier will result in a 404 error response. It is for this reason, an initial GET for the representation should be made before making an update.
+
+==== Delete a Team
+
+This enpoint allows for the deletion of a team.
+
+===== cURL Request
+
+include::{snippets}/delete-team/curl-request.adoc[]
+
+The team identifier should be present in the URL. If the team doesn't exist, a 404 response status will be returned.
+
+include::{snippets}/delete-team/path-parameters.adoc[]
+
+If the team is successfully deleted, a 200 response status will
+be returned.
+
+include::{snippets}/delete-team/http-response.adoc[]
+
+
+
+

@@ -24,6 +24,7 @@ docs
 
 # Miscellaneous
 TODO.md
+dependency-reduced-pom.xml
 
 
 ### From https://github.com/github/gitignore/blob/master/Gradle.gitignore ###
