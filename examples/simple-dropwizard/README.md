@@ -1,10 +1,10 @@
 simple-dropwizard
 =================
 
-This is an example project that uses use the below technologies to provide
+This is an example project that uses the below technologies to provide
 a simple documented API.
 
-* [DropWizard] 9.2 for backend
+* [DropWizard][1] 9.2 for backend
 * [DropWizard JUnit Rule][2] for testing (it uses Jersey Test Framework in the background).
 * [Spring REST Docs][3] as the core snippet generating framework.
 * [RESTDocsEXT Jersey][4] for creation of documentation snippets.
