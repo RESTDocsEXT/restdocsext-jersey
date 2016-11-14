@@ -132,7 +132,7 @@ public class JerseyRestDocumentationFilter implements ClientResponseFilter {
 
         String result = "/";
         if (path != null) {
-            result = result + path;
+            result = result + (path.startsWith("/") ? path.substring(1, path.length()) : path);
         }
         if (query != null) {
             result = result + "?" + query;
