@@ -39,12 +39,12 @@ import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.message.MessageBodyWorkers;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.restdocs.cli.QueryStringParser;
 import org.springframework.restdocs.operation.OperationRequest;
 import org.springframework.restdocs.operation.OperationRequestFactory;
 import org.springframework.restdocs.operation.OperationRequestPart;
 import org.springframework.restdocs.operation.OperationRequestPartFactory;
 import org.springframework.restdocs.operation.Parameters;
+import org.springframework.restdocs.operation.QueryStringParser;
 import org.springframework.restdocs.operation.RequestConverter;
 import org.springframework.util.StringUtils;
 
@@ -69,7 +69,8 @@ class JerseyRequestConverter implements RequestConverter<ClientRequest> {
     }
 
     private static byte[] extractContent(ClientRequest request) {
-        return request.resolveProperty(REQUEST_BODY_KEY, new byte[0]);
+        final byte[] content = request.resolveProperty(REQUEST_BODY_KEY, new byte[0]);
+        return isFormsRequest(request) ? new byte[0] : content;
     }
 
     /**
@@ -81,9 +82,7 @@ class JerseyRequestConverter implements RequestConverter<ClientRequest> {
      */
     private static List<OperationRequestPart> extractParts(ClientRequest request) {
         final List<OperationRequestPart> requestParts = new ArrayList<>();
-        if (("PUT".equalsIgnoreCase(request.getMethod())
-                || "POST".equalsIgnoreCase(request.getMethod()))
-                && request.getMediaType().isCompatible(MediaType.MULTIPART_FORM_DATA_TYPE)) {
+        if (isMultiPartRequest(request)) {
             final FormDataMultiPart multiPart
                     = extractEntity(request, FormDataMultiPart.class, request.getEntityClass());
             for (List<FormDataBodyPart> parts : multiPart.getFields().values()) {
@@ -126,9 +125,7 @@ class JerseyRequestConverter implements RequestConverter<ClientRequest> {
      */
     private static Parameters extractParameters(ClientRequest request) {
         final Parameters parameters = new QueryStringParser().parse(request.getUri());
-        if (("PUT".equalsIgnoreCase(request.getMethod())
-                || "POST".equalsIgnoreCase(request.getMethod()))
-                && request.getMediaType().isCompatible(MediaType.APPLICATION_FORM_URLENCODED_TYPE)) {
+        if (isFormsRequest(request)) {
             final Form form = extractEntity(request, Form.class, request.getEntityClass());
             final MultivaluedMap<String, String> formMap = form.asMap();
             for (String paramKey : formMap.keySet()) {
@@ -193,9 +190,7 @@ class JerseyRequestConverter implements RequestConverter<ClientRequest> {
                         + mediaType + " and java type " + returnType);
             }
 
-            if (("POST".equalsIgnoreCase(request.getMethod())
-                    || "PUT".equalsIgnoreCase(request.getMethod()))
-                    && request.getMediaType().isCompatible(MediaType.MULTIPART_FORM_DATA_TYPE)) {
+            if (isMultiPartRequest(request)) {
                 // If we don't do this, the boundary is not included
                 // So we add the boundary ourselves.
                 final String contentType = (String) headers.getFirst(HttpHeaders.CONTENT_TYPE);
@@ -240,5 +235,20 @@ class JerseyRequestConverter implements RequestConverter<ClientRequest> {
             converted.add(obj.toString());
         }
         return converted;
+    }
+
+    private static boolean isPutOrPost(ClientRequest request) {
+        return "POST".equalsIgnoreCase(request.getMethod())
+                || "PUT".equalsIgnoreCase(request.getMethod());
+    }
+
+    private static boolean isMultiPartRequest(ClientRequest request) {
+        return isPutOrPost(request)
+                && request.getMediaType().isCompatible(MediaType.MULTIPART_FORM_DATA_TYPE);
+    }
+
+    private static boolean isFormsRequest(ClientRequest request) {
+        return isPutOrPost(request)
+                && request.getMediaType().isCompatible(MediaType.APPLICATION_FORM_URLENCODED_TYPE);
     }
 }

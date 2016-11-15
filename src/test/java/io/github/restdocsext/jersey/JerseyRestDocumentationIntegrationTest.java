@@ -234,7 +234,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
     }
 
     @Test
-    public void form_paramters_snippet() {
+    public void form_parameters_snippet() {
         final Form form = new Form();
         form.param("a", "alpha");
         form.param("b", "bravo");
@@ -257,7 +257,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
     }
 
     @Test
-    public void missing_form_paramters() {
+    public void missing_form_parameters() {
         this.thrown.expect(ProcessingException.class);
 
         final Form form = new Form();
