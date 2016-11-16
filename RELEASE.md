@@ -32,7 +32,7 @@ sure everything works.
 
 11. Run the command from step 7
 
-10. Add tag for GitHub and push
+10. Add tag for GitHub and push (for tags use `git push origin --tags`)
 
         git tag -a v<version> -m "RESTDocsEXT Jersey <version>"
 
