@@ -183,7 +183,7 @@
         <dependency>
             <groupId>io.github.restdocsext</groupId>
             <artifactId>restdocsext-jersey</artifactId>
-            <version>0.1.0</version>
+            <version>0.1.1</version>
             <scope>test</scope>
         </dependency>
         <!-- Doesn't work with DropWizard's in-memory provider -->

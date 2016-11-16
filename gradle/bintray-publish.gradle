@@ -8,6 +8,7 @@ ext {
 bintray {
 	user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : 'none'
     key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : 'none'
+    publish = true
     pkg {
         repo = repoName
         name = artifactName
@@ -33,7 +34,7 @@ bintray {
             } 
         }
         
-        //dryRun = true
+        // dryRun = true
     }
     publications = ['restdocsPub']
 }

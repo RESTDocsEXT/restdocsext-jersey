@@ -40,7 +40,7 @@ NOTE: It is important that you make the RESTDocsEXT Jersey dependency only a tes
 ----
 <properties>
     <your.jersey.version>2.23</your.jersey.version>
-    <restdocsext.jersey.version>0.1.0</restdocsext.jersey.version>
+    <restdocsext.jersey.version>0.1.1</restdocsext.jersey.version>
 </properties>
 <dependencies>
     <dependency>
