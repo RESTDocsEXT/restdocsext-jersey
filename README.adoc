@@ -121,7 +121,7 @@ Below is an example using Jersey Test Framework. You will need the following tes
 [source,xml]
 ----
 <dependency>
-    <groupId>org.glassfish.jersey.test-framework.providers<groupId>
+    <groupId>org.glassfish.jersey.test-framework.providers</groupId>
     <artifactId>jersey-test-framework-provider-inmemory</artifactId>
     <version>${your.jersey.version}</version>
     <scope>test</scope>
