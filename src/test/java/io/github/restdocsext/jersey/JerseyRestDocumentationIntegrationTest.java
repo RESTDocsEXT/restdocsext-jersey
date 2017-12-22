@@ -17,7 +17,11 @@
 package io.github.restdocsext.jersey;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.ProcessingException;
@@ -39,6 +43,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.restdocs.JUnitRestDocumentation;
+import org.springframework.restdocs.operation.OperationRequest;
+import org.springframework.restdocs.operation.OperationResponse;
+import org.springframework.restdocs.operation.preprocess.OperationRequestPreprocessor;
+import org.springframework.restdocs.operation.preprocess.OperationResponsePreprocessor;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import io.github.restdocsext.jersey.test.TestModel;
@@ -532,6 +540,55 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
                                 .content(prettyPrinted))));
     }
 
+    @Test
+    public void custom_request_converter() throws IOException {
+        final String host = "example.com";
+        final Response response = target()
+            .register(documentationConfiguration(this.restDocumentation))
+            .register(
+                document(
+                    "default",
+                    new OperationRequestPreprocessor() {
+                        @Override
+                        public OperationRequest preprocess(OperationRequest request) {
+                            return request;
+                        }
+                    },
+                    new OperationResponsePreprocessor() {
+                        @Override
+                        public OperationResponse preprocess(OperationResponse response) {
+                            return response;
+                        }
+                    },
+                    new CustomJerseyRequestConverter(host),
+                    null
+                )
+            )
+            .path("test/get-default")
+            .request()
+            .get();
+        assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+        assertExpectedSnippetFilesExist(new File("build/generated-snippets/default"),
+            "http-request.adoc", "http-response.adoc", "curl-request.adoc");
+
+        // Confirm that the custom request converter was used by checking that the custom hostname
+        // was set in curl-request.adoc
+        boolean foundNewHost = false;
+        List<String> lines = Files.readAllLines(
+            Paths.get("build/generated-snippets/default/curl-request.adoc")
+        );
+        for (String line : lines) {
+            if (line.contains(host)) {
+                foundNewHost = true;
+                break;
+            }
+        }
+        assertTrue(
+            "Host was not set, thus the custom request converter wasn't used.",
+            foundNewHost
+        );
+    }
+
     private void assertExpectedSnippetFilesExist(File directory, String... snippets) {
         for (String snippet : snippets) {
             File snippetFile = new File(directory, snippet);
@@ -539,3 +596,4 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
         }
     }
 }
+

@@ -16,8 +16,12 @@
 
 package io.github.restdocsext.jersey;
 
+import org.glassfish.jersey.client.ClientRequest;
+import org.glassfish.jersey.client.ClientResponse;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.generate.RestDocumentationGenerator;
+import org.springframework.restdocs.operation.RequestConverter;
+import org.springframework.restdocs.operation.ResponseConverter;
 import org.springframework.restdocs.operation.preprocess.OperationRequestPreprocessor;
 import org.springframework.restdocs.operation.preprocess.OperationResponsePreprocessor;
 import org.springframework.restdocs.snippet.Snippet;
@@ -98,6 +102,42 @@ public abstract class JerseyRestDocumentation {
         return new JerseyRestDocumentationFilter(new RestDocumentationGenerator<>(identifier,
                 REQUEST_CONVERTER, RESPONSE_CONVERTER, requestPreprocessor,
                 responsePreprocessor, snippets));
+    }
+
+    /**
+     * Documents the API call with the given {@code identifier} using the given {@code snippets} in
+     * addition to any default snippets. The given {@code requestConverter} and
+     * {@code responseConverter} are used to convert the {@link ClientRequest} and
+     * {@link ClientResponse} to the Spring Restdocs
+     * {@link org.springframework.restdocs.operation.OperationRequest} and
+     * {@link org.springframework.restdocs.operation.OperationResponse} classes. The given
+     * {@code requestPreprocessor} and {@code responsePreprocessor} are applied to the request and
+     * response respectively before the are documented.
+     *
+     * @param identifier an identifier for the API call that is being documented
+     * @param requestPreprocessor the request preprocessor
+     * @param responsePreprocessor the response preprocessor
+     * @param requestConverter the request converter
+     * @param responseConverter the response converter
+     * @param snippets the snippets
+     * @return a {@link JerseyRestDocumentationFilter} that will produce the documentation
+     */
+    public static JerseyRestDocumentationFilter document(String identifier,
+        OperationRequestPreprocessor requestPreprocessor,
+        OperationResponsePreprocessor responsePreprocessor,
+        RequestConverter<ClientRequest> requestConverter,
+        ResponseConverter<ClientResponse> responseConverter,
+        Snippet... snippets
+    ) {
+        if (requestConverter == null) {
+            requestConverter = REQUEST_CONVERTER;
+        }
+        if (responseConverter == null) {
+            responseConverter = RESPONSE_CONVERTER;
+        }
+        return new JerseyRestDocumentationFilter(new RestDocumentationGenerator<>(identifier,
+            requestConverter, responseConverter, requestPreprocessor,
+            responsePreprocessor, snippets));
     }
 
     /**
