@@ -532,6 +532,50 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
                                 .content(prettyPrinted))));
     }
 
+    @Test
+    public void change_uri_scheme_host_port() {
+        Response response = target()
+                .register(documentationConfiguration(this.restDocumentation)
+                        .uris().withScheme("https").withHost("testing.com").removePort())
+                .register(document("change-uri", preprocessRequest(prettyPrint(),
+                        removeHeaders("a", "Host", "Content-Length", "User-Agent"))))
+                .path("/test/post-simple")
+                .request("text/plain")
+                .post(Entity.text("testing"));
+
+        assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+        response.close();
+
+        assertThat(
+                new File("build/generated-snippets/change-uri/curl-request.adoc"),
+                is(snippet(asciidoctor()).withContents(codeBlock(asciidoctor(), "bash")
+                        .content("$ curl 'https://testing.com/test/post-simple' -i "
+                                + "-X POST -H 'Accept: text/plain' "
+                                + "-H 'Content-Type: text/plain' "
+                                + "-d 'testing'"))));
+
+        response = target()
+                .register(documentationConfiguration(this.restDocumentation)
+                        .uris().withScheme("https").withHost("testing.com").withPort(80))
+                .register(document("change-uri", preprocessRequest(prettyPrint(),
+                        removeHeaders("a", "Host", "Content-Length", "User-Agent"))))
+                .path("/test/post-simple")
+                .request("text/plain")
+                .post(Entity.text("testing"));
+
+        assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+        response.close();
+
+        assertThat(
+                new File("build/generated-snippets/change-uri/curl-request.adoc"),
+                is(snippet(asciidoctor()).withContents(codeBlock(asciidoctor(), "bash")
+                        .content("$ curl 'https://testing.com:80/test/post-simple' -i "
+                                + "-X POST -H 'Accept: text/plain' "
+                                + "-H 'Content-Type: text/plain' "
+                                + "-d 'testing'"))));
+
+    }
+
     private void assertExpectedSnippetFilesExist(File directory, String... snippets) {
         for (String snippet : snippets) {
             File snippetFile = new File(directory, snippet);

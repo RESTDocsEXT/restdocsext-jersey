@@ -16,6 +16,7 @@
 
 package io.github.restdocsext.jersey;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +50,7 @@ public class JerseyRestDocumentationConfigurerTest {
     public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("build");
 
     private final ClientRequestContext requestContext = Mocks.clientRequestBuilder()
+            .uri(URI.create("http://localhost"))
             .build();
 
     private final ClientResponseContext responseContext = Mocks.clientResponseBuilder()

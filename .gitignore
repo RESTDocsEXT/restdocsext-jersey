@@ -14,6 +14,7 @@ dependency-cache
 build
 bin
 target
+out
 
 # Netbeans files
 .nb-gradle

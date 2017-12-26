@@ -102,6 +102,8 @@ public final class Mocks {
 
         private final ClientRequest clientRequest;
 
+        private URI uri;
+
         private ClientRequestBuilder() {
             this.clientRequest = mock(ClientRequest.class);
             when(this.clientRequest.getHeaders()).thenReturn(this.headers);
@@ -153,6 +155,21 @@ public final class Mocks {
                     return null;
                 }
             }).when(this.clientRequest).setProperty(anyString(), any());
+            // URI
+            doAnswer(new Answer<Void>() {
+                @Override
+                public Void answer(InvocationOnMock invocation) throws Throwable {
+                    ClientRequestBuilder.this.uri = (URI) invocation.getArguments()[0];
+                    return null;
+                }
+            }).when(this.clientRequest).setUri(any(URI.class));
+            when(this.clientRequest.getUri()).thenReturn(ClientRequestBuilder.this.uri);
+            doAnswer(new Answer<URI>() {
+                @Override
+                public URI answer(InvocationOnMock invocation) throws Throwable {
+                    return ClientRequestBuilder.this.uri;
+                }
+            }).when(this.clientRequest).getUri();
         }
 
         public ClientRequestBuilder contentType(MediaType mediaType) {
@@ -197,7 +214,7 @@ public final class Mocks {
         }
 
         public ClientRequestBuilder uri(URI uri) {
-            when(this.clientRequest.getUri()).thenReturn(uri);
+            ClientRequestBuilder.this.uri = uri;
             return this;
         }
 

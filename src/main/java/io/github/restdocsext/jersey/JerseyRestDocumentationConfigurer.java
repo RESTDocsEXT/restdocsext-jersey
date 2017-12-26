@@ -25,6 +25,7 @@ import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.client.ClientResponseFilter;
 
+import org.glassfish.jersey.client.ClientRequest;
 import org.springframework.restdocs.RestDocumentationContext;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.config.RestDocumentationConfigurer;
@@ -49,6 +50,9 @@ public class JerseyRestDocumentationConfigurer
 
     private final RestDocumentationContextProvider contextProvider;
 
+    private final UriConfigurer uriConfigurer = new UriConfigurer(this);
+
+
     JerseyRestDocumentationConfigurer(RestDocumentationContextProvider contextProvider) {
         this.contextProvider = contextProvider;
     }
@@ -56,6 +60,10 @@ public class JerseyRestDocumentationConfigurer
     @Override
     public JerseySnippetConfigurer snippets() {
         return this.snippetConfigurer;
+    }
+
+    public UriConfigurer uris() {
+        return this.uriConfigurer;
     }
 
     @Override
@@ -66,8 +74,10 @@ public class JerseyRestDocumentationConfigurer
 
         Map<String, Object> configuration = new HashMap<>();
         setProperty(requestContext, CONTEXT_CONFIGURATION_KEY, configuration);
+        configuration.put(ClientRequest.class.getName(), requestContext);
 
         apply(configuration, context);
+        this.uriConfigurer.apply(configuration, context);
     }
 
     private void setProperty(ClientRequestContext requestContext, String prop, Object value) {

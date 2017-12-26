@@ -74,7 +74,7 @@ public class TestResource {
     @Path("post-random-json")
     @Produces("application/json")
     @Consumes("application/json")
-    public String postRandonJson(String json) {
+    public String postRandomJson(String json) {
         return json;
     }
 
