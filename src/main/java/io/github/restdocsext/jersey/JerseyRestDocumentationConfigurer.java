@@ -62,6 +62,12 @@ public class JerseyRestDocumentationConfigurer
         return this.snippetConfigurer;
     }
 
+    /**
+     * Returns a {@link UriConfigurer} that can be used to configure the request URIs that
+     * will be documented.
+     *
+     * @return the URI configurer
+     */
     public UriConfigurer uris() {
         return this.uriConfigurer;
     }
