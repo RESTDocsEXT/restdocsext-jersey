@@ -27,7 +27,7 @@ sourceCompatibility = '1.7'
 
 ext {
     jerseyVersion = '2.10.4'
-    springRestdocsVersion = '1.1.2.RELEASE'
+    springRestdocsVersion = '2.0.0.RELEASE'
     javadocLinks = [
 		'http://docs.oracle.com/javase/8/docs/api/',
 		"http://docs.spring.io/spring-restdocs/docs/$springRestdocsVersion/api/"

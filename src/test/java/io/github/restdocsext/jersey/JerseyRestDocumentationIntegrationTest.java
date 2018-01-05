@@ -131,10 +131,11 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
         assertThat(
                 new File("build/generated-snippets/curl-snippet-with-content/curl-request.adoc"),
                 is(snippet(asciidoctor()).withContents(codeBlock(asciidoctor(), "bash")
-                                .content("$ curl 'http://localhost:" + PORT + "/test/post-simple' -i "
-                                        + "-X POST -H 'Accept: text/plain' "
-                                        + "-H 'Content-Type: " + contentType + "' "
-                                        + "-d 'content'"))));
+                                .content(
+                                    "$ curl 'http://localhost:" + PORT + "/test/post-simple' -i -X POST \\\n"
+                                        + "    -H 'Accept: text/plain' \\\n"
+                                        + "    -H 'Content-Type: " + contentType + "' \\\n"
+                                        + "    -d 'content'"))));
     }
 
     @Test
@@ -295,10 +296,9 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
         assertThat(new File("build/generated-snippets/curl-with-form-parameters/curl-request.adoc"),
                 is(snippet(asciidoctor()).withContents(
                                 codeBlock(asciidoctor(), "bash").content(
-                                        "$ curl "
-                                        + "'http://localhost:8080/test/post-form' -i -X POST "
-                                        + "-H 'Content-Type: application/x-www-form-urlencoded' "
-                                        + "-d 'a=alpha&b=bravo'"))));
+                                    "$ curl 'http://localhost:8080/test/post-form' -i -X POST \\\n"
+                                        + "    -H 'Content-Type: application/x-www-form-urlencoded' \\\n"
+                                        + "    -d 'a=alpha&b=bravo'"))));
     }
 
     @Test
@@ -322,10 +322,9 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
         assertThat(new File("build/generated-snippets/curl-post-with-query-and-form/curl-request.adoc"),
                 is(snippet(asciidoctor()).withContents(
                         codeBlock(asciidoctor(), "bash").content(
-                                "$ curl "
-                                + "'http://localhost:8080/test/post-form?c=charlie&d=delta' -i -X POST "
-                                + "-H 'Content-Type: application/x-www-form-urlencoded' "
-                                + "-d 'a=alpha&b=bravo'"))));
+                                "$ curl 'http://localhost:8080/test/post-form?c=charlie&d=delta' -i -X POST \\\n"
+                                    + "    -H 'Content-Type: application/x-www-form-urlencoded' \\\n"
+                                    + "    -d 'a=alpha&b=bravo'"))));
     }
 
     @Test
@@ -549,10 +548,10 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
         assertThat(
                 new File("build/generated-snippets/change-uri/curl-request.adoc"),
                 is(snippet(asciidoctor()).withContents(codeBlock(asciidoctor(), "bash")
-                        .content("$ curl 'https://testing.com/test/post-simple' -i "
-                                + "-X POST -H 'Accept: text/plain' "
-                                + "-H 'Content-Type: text/plain' "
-                                + "-d 'testing'"))));
+                        .content("$ curl 'https://testing.com/test/post-simple' -i -X POST \\\n"
+                            + "    -H 'Accept: text/plain' \\\n"
+                            + "    -H 'Content-Type: text/plain' \\\n"
+                            + "    -d 'testing'"))));
 
         response = target()
                 .register(documentationConfiguration(this.restDocumentation)
@@ -569,10 +568,10 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
         assertThat(
                 new File("build/generated-snippets/change-uri/curl-request.adoc"),
                 is(snippet(asciidoctor()).withContents(codeBlock(asciidoctor(), "bash")
-                        .content("$ curl 'https://testing.com:80/test/post-simple' -i "
-                                + "-X POST -H 'Accept: text/plain' "
-                                + "-H 'Content-Type: text/plain' "
-                                + "-d 'testing'"))));
+                        .content("$ curl 'https://testing.com:80/test/post-simple' -i -X POST \\\n"
+                            + "    -H 'Accept: text/plain' \\\n"
+                            + "    -H 'Content-Type: text/plain' \\\n"
+                            + "    -d 'testing'"))));
 
     }
 
