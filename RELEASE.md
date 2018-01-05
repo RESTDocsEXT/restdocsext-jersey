@@ -14,7 +14,7 @@ Steps for Releasing
 
 5. Update CHANGELOG.
 
-6. Uncomment `dryRun = true` in the `bintray` closure. We should make a dry run just to make
+6. Uncomment `dryRun = true` in the `bintray` closure (gradle/bintray-publish.gradle). We should make a dry run just to make
 sure everything works.
 
 7. Do dry run

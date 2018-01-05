@@ -13,7 +13,7 @@
         <beanutils.version>1.9.2</beanutils.version>
         <jersey.version>2.23</jersey.version>
         <resteasy.version>3.0.9.Final</resteasy.version>
-        <restdocsext.jersey.version>0.1.1</restdocsext.jersey.version>
+        <restdocsext.jersey.version>1.0.0</restdocsext.jersey.version>
     </properties>
     
     <parent>
