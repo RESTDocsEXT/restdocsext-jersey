@@ -41,12 +41,15 @@ import static io.github.restdocsext.jersey.DocumentationProperties.CONTEXT_CONFI
  * @author Paul Samsotha
  */
 @Priority(ProviderPriorities.CONFIGURER)
-public class JerseyRestDocumentationConfigurer
-        extends
-        RestDocumentationConfigurer<JerseySnippetConfigurer, JerseyRestDocumentationConfigurer>
-        implements ClientResponseFilter {
+public class JerseyRestDocumentationConfigurer extends
+        RestDocumentationConfigurer<JerseySnippetConfigurer, JerseyOperationPreprocessorsConfigurer,
+            JerseyRestDocumentationConfigurer>
+    implements ClientResponseFilter {
 
     private final JerseySnippetConfigurer snippetConfigurer = new JerseySnippetConfigurer(this);
+
+    private final JerseyOperationPreprocessorsConfigurer operationPreprocessorsConfigurer =
+        new JerseyOperationPreprocessorsConfigurer(this);
 
     private final RestDocumentationContextProvider contextProvider;
 
@@ -60,6 +63,11 @@ public class JerseyRestDocumentationConfigurer
     @Override
     public JerseySnippetConfigurer snippets() {
         return this.snippetConfigurer;
+    }
+
+    @Override
+    public JerseyOperationPreprocessorsConfigurer operationPreprocessors() {
+        return this.operationPreprocessorsConfigurer;
     }
 
     /**
