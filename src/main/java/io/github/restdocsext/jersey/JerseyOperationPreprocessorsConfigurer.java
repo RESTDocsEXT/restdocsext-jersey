@@ -28,20 +28,20 @@ import org.springframework.restdocs.config.OperationPreprocessorsConfigurer;
  * A configurer that can be used to configure the operation preprocessors when using Jersey 2.
  *
  * @author Stian Lågstad
- * @since 2.0.0
+ * @since 1.0.0
  */
 public final class JerseyOperationPreprocessorsConfigurer extends
-    OperationPreprocessorsConfigurer<JerseyRestDocumentationConfigurer, JerseyOperationPreprocessorsConfigurer>
-    implements ClientResponseFilter {
+        OperationPreprocessorsConfigurer<JerseyRestDocumentationConfigurer, JerseyOperationPreprocessorsConfigurer>
+        implements ClientResponseFilter {
 
-  JerseyOperationPreprocessorsConfigurer(
-      JerseyRestDocumentationConfigurer parent) {
-    super(parent);
-  }
+    JerseyOperationPreprocessorsConfigurer(
+            JerseyRestDocumentationConfigurer parent) {
+        super(parent);
+    }
 
-  @Override
-  public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext)
-      throws IOException {
-    and().filter(requestContext, responseContext);
-  }
+    @Override
+    public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext)
+            throws IOException {
+        and().filter(requestContext, responseContext);
+    }
 }
