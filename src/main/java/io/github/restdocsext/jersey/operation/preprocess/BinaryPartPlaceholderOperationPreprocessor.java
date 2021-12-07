@@ -19,6 +19,7 @@ package io.github.restdocsext.jersey.operation.preprocess;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.restdocs.operation.OperationRequest;
 import org.springframework.restdocs.operation.OperationRequestFactory;
@@ -26,8 +27,6 @@ import org.springframework.restdocs.operation.OperationRequestPart;
 import org.springframework.restdocs.operation.OperationRequestPartFactory;
 import org.springframework.restdocs.operation.preprocess.OperationPreprocessor;
 import org.springframework.restdocs.operation.preprocess.OperationPreprocessorAdapter;
-
-import jersey.repackaged.com.google.common.base.Preconditions;
 
 /**
  * {@link OperationPreprocessor} to add placeholder content for binary multipart fields.
@@ -54,7 +53,7 @@ public final class BinaryPartPlaceholderOperationPreprocessor
      * @return the multipart field
      */
     public BinaryPartPlaceholderOperationPreprocessor field(String name) {
-        Preconditions.checkNotNull(name, "field name must not be null");
+        Objects.requireNonNull(name, "field name must not be null");
         final MultiPartField field = new MultiPartField(name, null);
         this.fields.add(field);
         return this;
@@ -68,8 +67,8 @@ public final class BinaryPartPlaceholderOperationPreprocessor
      * @return the operation preprocessor instance.
      */
     public BinaryPartPlaceholderOperationPreprocessor field(String name, String placeholder) {
-        Preconditions.checkNotNull(name, "field name must not be null");
-        Preconditions.checkNotNull(placeholder, "placeholder must not be null");
+        Objects.requireNonNull(name, "field name must not be null");
+        Objects.requireNonNull(placeholder, "placeholder must not be null");
         final MultiPartField field = new MultiPartField(name, placeholder);
         this.fields.add(field);
         return this;

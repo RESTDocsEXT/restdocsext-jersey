@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Priority;
 import javax.ws.rs.client.ClientRequestContext;
@@ -34,7 +35,6 @@ import org.springframework.restdocs.generate.RestDocumentationGenerator;
 import org.springframework.restdocs.snippet.Snippet;
 
 import io.github.restdocsext.jersey.DocumentationProperties.ProviderPriorities;
-import jersey.repackaged.com.google.common.base.Preconditions;
 
 import static io.github.restdocsext.jersey.DocumentationProperties.CONTEXT_CONFIGURATION_KEY;
 import static io.github.restdocsext.jersey.DocumentationProperties.PATH_BUILDER_KEY;
@@ -55,7 +55,7 @@ public class JerseyRestDocumentationFilter implements ClientResponseFilter {
 
     JerseyRestDocumentationFilter(
             RestDocumentationGenerator<ClientRequest, ClientResponse> delegate) {
-        Preconditions.checkNotNull(delegate, "delegate must not be null");
+        Objects.requireNonNull(delegate, "delegate must not be null");
         this.delegate = delegate;
     }
 

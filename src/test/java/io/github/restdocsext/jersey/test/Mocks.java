@@ -18,6 +18,7 @@ package io.github.restdocsext.jersey.test;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Collections;
@@ -37,6 +38,7 @@ import org.mockito.stubbing.Answer;
 import org.springframework.http.HttpHeaders;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -138,6 +140,16 @@ public final class Mocks {
                         }
                     });
             when(this.clientRequest.resolveProperty(anyString(), any())).thenAnswer(
+                    new Answer<Object>() {
+                        @Override
+                        public Object answer(InvocationOnMock invocation) throws Throwable {
+                            String prop = invocation.getArgumentAt(0, String.class);
+                            final Object value = ClientRequestBuilder.this.configProps.get(prop);
+                            return value == null ? invocation.getArguments()[1] : value;
+                        }
+                    });
+            // any doesn't suffice for array-type arguments.
+            when(this.clientRequest.resolveProperty(anyString(), any(Array.class))).thenAnswer(
                     new Answer<Object>() {
                         @Override
                         public Object answer(InvocationOnMock invocation) throws Throwable {
