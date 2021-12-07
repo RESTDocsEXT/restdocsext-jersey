@@ -18,6 +18,9 @@ package io.github.restdocsext.jersey.client;
 
 import java.security.KeyStore;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -147,6 +150,30 @@ public class RestdocsClientBuilder extends ClientBuilder {
     @Override
     public RestdocsClientBuilder register(Object component, Map<Class<?>, Integer> contracts) {
         this.delegate.register(component, contracts);
+        return this;
+    }
+
+    @Override
+    public ClientBuilder executorService(ExecutorService executorService) {
+        this.delegate.executorService(executorService);
+        return this;
+    }
+
+    @Override
+    public ClientBuilder scheduledExecutorService(ScheduledExecutorService scheduledExecutorService) {
+        this.delegate.scheduledExecutorService(scheduledExecutorService);
+        return this;
+    }
+
+    @Override
+    public ClientBuilder connectTimeout(long timeout, TimeUnit unit) {
+        this.delegate.connectTimeout(timeout, unit);
+        return this;
+    }
+
+    @Override
+    public ClientBuilder readTimeout(long timeout, TimeUnit unit) {
+        this.delegate.readTimeout(timeout, unit);
         return this;
     }
 }

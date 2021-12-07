@@ -59,7 +59,15 @@ public class ResponseInterceptor implements ClientResponseFilter {
         }
         in.mark(maxEntitySize + 1);
         final byte[] entity = new byte[maxEntitySize + 1];
-        final int entitySize = in.read(entity);
+        int cursor = 0;
+        while(cursor <= maxEntitySize) {
+            int chunkSize = in.read(entity, cursor, entity.length - cursor);
+            cursor += chunkSize;
+            if (chunkSize < 1) {
+                break;
+            }
+        }
+        final int entitySize = cursor+1;
         b.append(new String(entity, 0, Math.min(entitySize, maxEntitySize), charset));
         if (entitySize > maxEntitySize) {
             b.append("...more...");

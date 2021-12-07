@@ -38,7 +38,7 @@ class JerseyResponseConverter implements ResponseConverter<ClientResponse> {
     @Override
     public OperationResponse convert(ClientResponse response) {
         return new OperationResponseFactory().create(
-                HttpStatus.valueOf(response.getStatus()),
+                response.getStatus(),
                 extractHeaders(response.getHeaders()),
                 extractContent(response));
     }

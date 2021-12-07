@@ -27,7 +27,7 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.glassfish.jersey.filter.LoggingFilter;
+import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
@@ -52,7 +52,7 @@ import static io.github.restdocsext.jersey.test.SnippetMatchers.httpRequest;
 import static io.github.restdocsext.jersey.test.SnippetMatchers.snippet;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -101,7 +101,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
     public ResourceConfig configure() {
         return new ResourceConfig(TestResource.class)
                 .register(MultiPartFeature.class)
-                .register(LoggingFilter.class);
+                .register(LoggingFeature.class);
     }
 
     @Test
@@ -118,7 +118,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
 
     @Test
     public void curl_snippet_with_content() {
-        final String contentType = "text/plain; charset=UTF-8";
+        final String contentType = "text/plain;charset=UTF-8";
         final Response response = target()
                 .register(documentationConfiguration(this.restDocumentation))
                 .register(document("curl-snippet-with-content",
@@ -154,7 +154,7 @@ public class JerseyRestDocumentationIntegrationTest extends JerseyTest {
         assertThat(new File("build/generated-snippets/curl-get-with-query-string/curl-request.adoc"),
                 is(snippet(asciidoctor()).withContents(codeBlock(asciidoctor(), "bash").content(
                                         "$ curl "
-                                        + "'http://localhost:8080/test/get-default?a=alpha&b=bravo' -i"))));
+                                        + "'http://localhost:8080/test/get-default?a=alpha&b=bravo' -i -X GET"))));
     }
 
     @Test

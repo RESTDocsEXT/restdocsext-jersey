@@ -22,12 +22,12 @@ apply from: "gradle/checkstyle.gradle"
 apply from: "gradle/pmd.gradle"
 apply from: "gradle/bintray-publish.gradle"
 
-sourceCompatibility = '1.7'
+sourceCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 ext {
-    jerseyVersion = '2.10.4'
-    springRestdocsVersion = '2.0.0.RELEASE'
+    jerseyVersion = '2.35'
+    springRestdocsVersion = '2.0.5.RELEASE'
     javadocLinks = [
 		'http://docs.oracle.com/javase/8/docs/api/',
 		"http://docs.spring.io/spring-restdocs/docs/$springRestdocsVersion/api/"
@@ -60,6 +60,7 @@ dependencies {
     testCompile 'org.powermock:powermock-core:1.6.3'
     testCompile 'org.powermock:powermock-api-mockito:1.6.3'
     testCompile 'org.powermock:powermock-module-junit4:1.6.3'
+    testCompile "org.glassfish.jersey.inject:jersey-hk2:$jerseyVersion"
     testCompile "org.glassfish.jersey.test-framework.providers:jersey-test-framework-provider-grizzly2:$jerseyVersion"
     testCompile "org.glassfish.jersey.test-framework.providers:jersey-test-framework-provider-inmemory:$jerseyVersion"
 }

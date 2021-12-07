@@ -18,6 +18,7 @@ package io.github.restdocsext.jersey.client;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
@@ -28,7 +29,6 @@ import javax.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.client.JerseyWebTarget;
 
 import io.github.restdocsext.jersey.JerseyRestDocumentationFilter;
-import jersey.repackaged.com.google.common.base.Preconditions;
 
 import static io.github.restdocsext.jersey.DocumentationProperties.DOCS_FILTER_KEY;
 import static io.github.restdocsext.jersey.DocumentationProperties.PATH_BUILDER_KEY;
@@ -76,7 +76,7 @@ public final class RestdocsWebTarget implements WebTarget {
 
     @Override
     public RestdocsWebTarget path(String path) throws NullPointerException {
-        Preconditions.checkNotNull(path, "path is 'null'.");
+        Objects.requireNonNull(path, "path is 'null'.");
         getBuilderProperty(PATH_BUILDER_KEY).append(getNormalizedPath(path));
         return new RestdocsWebTarget(this.delegate.path(path));
     }

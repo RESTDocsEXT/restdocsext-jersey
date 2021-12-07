@@ -48,8 +48,6 @@ import org.springframework.restdocs.operation.QueryStringParser;
 import org.springframework.restdocs.operation.RequestConverter;
 import org.springframework.util.StringUtils;
 
-import jersey.repackaged.com.google.common.collect.Lists;
-
 import static io.github.restdocsext.jersey.DocumentationProperties.REQUEST_BODY_KEY;
 
 /**
@@ -230,7 +228,7 @@ class JerseyRequestConverter implements RequestConverter<ClientRequest> {
     }
 
     private static List<String> objectListToStringList(List<Object> source) {
-        final List<String> converted = Lists.newArrayList();
+        final List<String> converted = new ArrayList<>();
         for (Object obj : source) {
             converted.add(obj.toString());
         }

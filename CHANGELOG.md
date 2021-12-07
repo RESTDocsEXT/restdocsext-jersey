@@ -2,6 +2,11 @@
 CHANGELOG
 =========
 
+### 2.0.0
+* **deps:** Upgraded to Java 8 as baseline (possibly breaking change)
+* **deps:** Upgraded to support Jersey 2.34 onwards
+* **bug:** Fix response being truncated and unparsable when it is not buffered in memory
+
 ### 1.0.0 - 2018-01-05
 
 * **feat:** add ability to modify snippet base URI (scheme, host, port) (closes [#7](https://github.com/RESTDocsEXT/restdocsext-jersey/issues/7))
